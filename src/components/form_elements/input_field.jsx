@@ -9,6 +9,7 @@ const InputField = ({
   value,
   onChange,
   placeholder,
+  twClass,
   required,
 }) => {
   return (
@@ -26,7 +27,7 @@ const InputField = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full border border-slate-400 p-1 text-sm hover:border-indigo-300 outline-indigo-300"
+        className={`${twClass} w-full border border-slate-400 p-1 text-sm hover:border-indigo-300 outline-indigo-300`}
       />
     </div>
   );
@@ -38,6 +39,7 @@ InputField.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  twClass: PropTypes.string,
   placeholder: PropTypes.string,
   required: PropTypes.bool,
 };
