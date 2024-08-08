@@ -6,7 +6,7 @@ const CheckboxField = ({
   label,
   type,
   name,
-  value,
+  checked,
   onChange,
   placeholder,
   required,
@@ -19,7 +19,7 @@ const CheckboxField = ({
             type={type}
             name={name}
             id={name}
-            value={value}
+            checked={checked}
             onChange={onChange}
             placeholder={placeholder}
             required={required}
@@ -36,7 +36,7 @@ CheckboxField.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.bool,

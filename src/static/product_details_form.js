@@ -1,6 +1,6 @@
 const slug = (str, separator) => {
   const pattern = new RegExp(`[^a-zA-Z0-9${separator}]`, "g");
-  return str.replace(pattern, "").replace(separator, "_").toLowerCase();
+  return str.replace(pattern, "").replaceAll(separator, "_").toLowerCase();
 };
 
 //  dropdown options
@@ -48,48 +48,62 @@ const paymentTypeOptions = [
 export const form_fields = [
   {
     property_name: slug("Container Title", " "),
+    value: "",
   },
   {
     property_name: slug("Container Grade Title", " "),
+    value: "",
   },
   {
     property_name: slug("Container Type", " "),
+    value: "",
   },
   {
     property_name: slug("Location", " "),
+    value: "Atlanta, GA",
   },
   {
     property_name: slug("Size", " "),
+    value: "10'",
   },
   {
     property_name: slug("Height", " "),
+    value: `8' 6" Standard`,
   },
   {
     property_name: slug("Grade", " "),
+    value: `Wind and Water tight (WWT)`,
   },
   {
     property_name: slug("Condition", " "),
+    value: `New`,
   },
   {
     property_name: slug("Selection Type", " "),
+    value: `First of the Stack (FO)`,
   },
   {
     property_name: slug("Door Type", " "),
+    value: "",
   },
   {
     property_name: slug("Sales Tags", " "),
+    value: "",
   },
   {
     property_name: slug("Store ID", " "),
   },
   {
     property_name: slug("Payment Type", " "),
+    value: "Buy",
   },
   {
     property_name: slug("Reefer Container", " "),
+    value: true,
   },
   {
     property_name: slug("Reefer Container Status", " "),
+    value: true,
   },
 ];
 

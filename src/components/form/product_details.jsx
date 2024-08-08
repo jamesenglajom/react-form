@@ -8,16 +8,16 @@ import { form_object, form_fields } from "../../static/product_details_form";
 const ProductsDetailsForm = () => {
   const [formData, setFormData] = useState(
     form_fields.reduce(
-      (acc, field) => ({ ...acc, [field.property_name]: "" }),
+      (acc, field) => ({ ...acc, [field.property_name]: field.value ?? "" }),
       {}
     )
   );
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type == "checkbox" ? checked : value,
     });
     console.log(formData);
   };
@@ -90,7 +90,7 @@ const ProductsDetailsForm = () => {
                           label={input_el.label}
                           type={input_el.type}
                           name={input_el.property_name}
-                          value={formData[input_el.property_name]}
+                          checked={formData[input_el.property_name]}
                           onChange={handleChange}
                           selection={input_el.selection}
                           // placeholder="Enter your username"
@@ -103,7 +103,7 @@ const ProductsDetailsForm = () => {
                           label={input_el.label}
                           type={input_el.type}
                           name={input_el.property_name}
-                          value={formData[input_el.property_name]}
+                          checked={formData[input_el.property_name]}
                           onChange={handleChange}
                           selection={input_el.selection}
                           // placeholder="Enter your username"
