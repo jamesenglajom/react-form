@@ -7,7 +7,7 @@ const Table = ({ data, columns, twClass }) => {
             <thead className="border-t border-b-[2px] border-slate-300">
                 <tr>
                     {columns.map((column, index)=>
-                        <th key={column.name+'-'+index} className={`${column.stype} text-xs py-2 text-slate-600`}>
+                        <th key={column.name+'-'+index} className={`${column.stype} text-xs py-2 text-slate-600 bg-slate-200`}>
                             <div className="flex items-center">
                                 {index==0 && (
                                     <div className="pr-2">
