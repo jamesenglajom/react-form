@@ -2,6 +2,7 @@
 /* #version=0.0.0-0#2 default 2024-08-10T16:02:26 E639163D8FC582D7 */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import useDebounce from '../hooks/useDebounce'; // Adjust the path as needed
 
 const useFetchData = (url) => {
   const [data, setData] = useState([]);
@@ -11,7 +12,11 @@ const useFetchData = (url) => {
   const [loading, setFetchLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const debouncedQuery = useDebounce(url, 300);
+
   useEffect(() => {
+    if (!debouncedQuery) return; // Skip if debouncedQuery is empty
+
     const fetchData = async () => {
       try {
         setFetchLoading(true);
@@ -35,7 +40,8 @@ const useFetchData = (url) => {
     };
 
     fetchData();
-  }, [url]);
+  }, [debouncedQuery]);
+  // }, [url]);
 
   return { data, count, pagination, loading, error, statistics };
 };

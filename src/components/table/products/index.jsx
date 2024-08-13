@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Table from "../../table/index";
 import TableSortButton from "../../table/sort_button";
 import FilterDropDown from "../../table/filter_dropdown";
@@ -11,19 +11,15 @@ import tdName from "../products/td_name"
 import tdPrice from "../products/td_price"
 import ProductTableTabs from '../tabs';
 
+
 const ProductsTable = () => {
     const base_url = 'https://onsitestorage.com/wp-json/wp_to_react/v1/products';
-    const sortable_properties = [
-        { id: 'name', label: 'Name' },
-        { id: 'sku', label: 'SKU' },
-        { id: 'price', label: 'Price' }
-    ];
     const tabs = [
-        {id: 'all', label:"All"},
-        {id: 'publish', label:"Published"},
-        {id: 'draft', label:"Drafts"},
-        {id: 'private', label:"Private"},
-        {id: 'trash', label:"Trash"},
+        { id: 'all', label: "All" },
+        { id: 'publish', label: "Published" },
+        { id: 'draft', label: "Drafts" },
+        { id: 'private', label: "Private" },
+        { id: 'trash', label: "Trash" },
     ];
     const filters = [
         {
@@ -75,11 +71,6 @@ const ProductsTable = () => {
         { id: "published_date", label: "Publish Date" },
         { id: "modified_date", label: "Modified Date" },
     ];
-    const postStatusOptions = [
-        { id: "modified_date", label: "Modified Date" },
-        { id: "name", label: "Name" },
-        { id: "sku", label: "SKU" },
-    ];
     const [url, setUrl] = useState(base_url);
     let { data, pagination, loading, statistics } = useFetchData(url);
     const [search, setSearch] = useState("");
@@ -91,17 +82,19 @@ const ProductsTable = () => {
     const [searchfilter, setSearchFilter] = useState("hidden");
     const [filtertabs, setFilterTabs] = useState("");
     const [openFormModal, setOpenFormModal] = useState(false)
-    // const [fetchError, setFetchError] = useState(false);
 
     const handleSearch = (e) => {
+        setPage(1);
         setSearch(e.target.value)
+        setRefetchFlag(!refetchFlag);
     }
 
     const handleTabSelect = (e) => {
         const { value } = e.target;
-        const v = {post_status: value};
+        const v = { post_status: value };
         setPage(1);
         setPostStatus(v)
+        setRefetchFlag(!refetchFlag);
     }
 
     const findIndexByName = (array, name) => {
@@ -136,9 +129,11 @@ const ProductsTable = () => {
         temp = temp.filter(i => i.value.length > 0);
         temp = arrayToObject(temp);
         temp['page'] = page;
-        temp['search'] = search;
         temp = { ...temp, ...sort };
-        temp = {...temp, ...post_status};
+        temp = { ...temp, ...post_status };
+        if (search != "") {
+            temp['search'] = search;
+        }
         return temp;
     }
 
@@ -167,6 +162,7 @@ const ProductsTable = () => {
 
     const changePage = (to_page) => {
         setPage(to_page);
+        setRefetchFlag(!refetchFlag);
     }
 
     const showSearchFilter = () => {
@@ -181,9 +177,8 @@ const ProductsTable = () => {
 
     useEffect(() => {
         refetchtable();
-    }, [page, refetchFlag, post_status]);
+    }, [refetchFlag]);
 
-    // table columns
     const columns = [
         { Component: tdName, name: "name", label: "Name", th_style: "min-w-[450px] max-w-[450px] w-[450px]", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
         { Component: tdPrice, name: "price", label: "Price", th_style: "min-w-[200px] max-w-[200px] w-[200px] text-center justify-center", th_align: "text-center", td_style: "p-[5px] text-xs font-semibold text-indigo-400 justify-center text-center" },
@@ -226,10 +221,10 @@ const ProductsTable = () => {
                     {/* sort and paginate buttons */}
                     <div className={`${''} min-w-[118px] flex items-center justify-end`}>
                         <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort} disabled={loading}></TableSortButton>
-                        <button disabled={loading || pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
+                        <button disabled={loading ?? pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
                             <Icon icon="fluent:chevron-left-16-filled" />
                         </button>
-                        <button disabled={loading || pagination.next ? false : true} onClick={() => changePage(pagination.next)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
+                        <button disabled={loading ?? pagination.next ? false : true} onClick={() => changePage(pagination.next)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
                             <Icon icon="fluent:chevron-right-16-filled" />
                         </button>
                     </div>
