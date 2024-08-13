@@ -5,9 +5,12 @@ import { Icon } from '@iconify/react';
 import { useEffect, useState, useRef } from 'react';
 // prop type not yet implemented
 // options: array, type: string
-const TableSortButton = ({ options, type, onChange }) => {
-    const [selection, setSelection] = useState([]);
+const TableSortButton = ({ options, onChange, value, disabled }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const orders = [
+        {id:"asc", tooltip:'Ascending', icon:'fluent:text-sort-ascending-16-filled', label: "AZ"},
+        {id:"desc",tooltip:'Descending', icon:'fluent:text-sort-descending-16-filled', label: "ZA"}
+    ];
     const dropdownRef = useRef(null);
     // open dropdown
     const handleOpenDropdown = () => {
@@ -31,18 +34,7 @@ const TableSortButton = ({ options, type, onChange }) => {
     }, []);
     // selection handler
     const handleSelection = (v) => {
-        if (v.target.checked) {
-            let newArr = [...selection, v.target.name]
-            setSelection([...new Set(newArr)]);
-            onChange([...new Set(newArr)])
-        } else {
-            setSelection(selection.filter(i => i != v.target.name))
-            onChange(selection.filter(i => i != v.target.name))
-        }
-    }
-
-    const clearSelection = () => {
-        setSelection([]);
+        onChange(v)
     }
 
     return (
@@ -51,19 +43,37 @@ const TableSortButton = ({ options, type, onChange }) => {
                 <Icon icon="fluent:arrow-sort-16-filled" />
             </button>
             {isOpen && (<div ref={dropdownRef} className="generic-dropdown absolute top-[100%] bg-white border border-stone-300 right-0 rounded-md mt-[5px] z-[10]">
-                <div className="overflow-hidden w-full p-4 grid gap-[5px]">
-                    {/* <div className="text-sm mb-2">Sort by</div> */}
+                <div className="overflow-hidden w-full p-3 grid gap-[5px]">
+                    <div className="text-sm mb-2">Sort by</div>
                     {options.map(option => (
                         <div key={`table-sort-option-${option.id}`} className="flex gap-[10px] flex-0-0-auto whitespace-nowrap">
-                            <input type="checkbox" className="inline-block cursor-pointer" id={`filer-${option.id}`} name={option.id} onChange={handleSelection} />
-                            <label htmlFor={`filer-${option.id}`} className="text-sm inline-block overflow-ellipsis whitespace-nowrap text-sm text-stone-700 select-none cursor-pointer">
+                            <input type="radio" disabled={disabled} className="inline-block cursor-pointer" checked={value.orderby === option.id} value={option.id} id={`table-sort-option-${option.id}`} name="sort-orderby-radio" onChange={()=> handleSelection({orderby:    option.id})}/>
+                            <label htmlFor={`table-sort-option-${option.id}`} className="text-sm inline-block overflow-ellipsis whitespace-nowrap text-sm text-stone-700 select-none cursor-pointer">
                                 {option.label}
                             </label>
                         </div>
                     ))}
-                    <div>
-                        <button className="mt-3 text-xs text-stone-400" onClick={clearSelection}>Clear</button>
-                    </div>
+                </div>
+                
+                <div className="border-t border-stone-300 min-w-[110px] p-3">
+                    {
+                        orders.map((order,index)=>(
+                            <div key={`sort-order-radio-wrap-${order.id}`}>
+                                <label htmlFor={`sort-order-option-${order.id}`}>
+                                    <input type="radio" className="hidden" id={`sort-order-option-${order.id}`} name="sort-order-radio" value={order.id} checked={value.order === order.id} onChange={()=> handleSelection({order:order.id})}/>
+                                    <button disabled={disabled || value.order === order.id} className={`flex items-center w-full text-sm px-3 rounded-md py-1 ${value.order === order.id ? 'bg-stone-300':'bg-white hover:bg-stone-100'} ${orders.length !== index +1 && 'mb-1'}`} onClick={()=> handleSelection({order:order.id})}>
+                                        <div className={`mr-3`}>
+                                            <Icon icon={order.icon}></Icon>
+                                        </div>
+                                        <div>
+                                            {order.label}
+                                        </div>
+                                    </button>
+                                </label>
+                            </div>
+                        ))
+                    }
+
                 </div>
             </div>)
             }
@@ -73,7 +83,7 @@ const TableSortButton = ({ options, type, onChange }) => {
 };
 
 TableSortButton.propTypes = {
-    type: PropTypes.string.isRequired,
+    value: PropTypes.object.isRequired,
     options: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
 };

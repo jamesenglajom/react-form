@@ -17,7 +17,7 @@ const ProductsDetailsForm = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type == "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     });
     console.log(formData);
   };
@@ -31,16 +31,16 @@ const ProductsDetailsForm = () => {
   return (
     <div className="p-5">
       <div>
-        <div className="border border-slate-500 p-2 font-bold">
+        <div className="border-b-[2px] border-stone-500 p-2 font-bold">
           Product Details Form
         </div>
-        <div className="border border-slate-400 pb-3">
+        <div className="border-stone-400 pb-3">
           <form onSubmit={handleSubmit}>
             {form_object.map((group, index) => (
               // display if type input
               <div
                 key={`form-group-${index}`}
-                className={` w-full px-2 py-4 pb-[30px] border-b border-slate-300`}>
+                className={` w-full px-2 py-4 pb-[30px] border-b border-stone-300`}>
                 <div className={`${""} text-lg uppercase font-bold`}>
                   {group.name}
                 </div>

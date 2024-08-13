@@ -7,6 +7,7 @@ const useFetchData = (url) => {
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState([]);
   const [count, setCount] = useState(0);
+  const [statistics, setStatistic] = useState([]);
   const [loading, setFetchLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -20,6 +21,7 @@ const useFetchData = (url) => {
             setData(response.data.products);
             setPagination(response.data.pagination);
             setCount(response.data.count);
+            setStatistic(response.data.status_statistics);
             setFetchLoading(false);
           })
           .catch(error => {
@@ -35,7 +37,7 @@ const useFetchData = (url) => {
     fetchData();
   }, [url]);
 
-  return { data, count, pagination, loading, error };
+  return { data, count, pagination, loading, error, statistics };
 };
 
 export default useFetchData;
