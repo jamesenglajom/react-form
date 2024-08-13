@@ -221,10 +221,10 @@ const ProductsTable = () => {
                     {/* sort and paginate buttons */}
                     <div className={`${''} min-w-[118px] flex items-center justify-end`}>
                         <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort} disabled={loading}></TableSortButton>
-                        <button disabled={loading ?? pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
+                        <button disabled={pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
                             <Icon icon="fluent:chevron-left-16-filled" />
                         </button>
-                        <button disabled={loading ?? pagination.next ? false : true} onClick={() => changePage(pagination.next)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
+                        <button disabled={pagination.next ? false : true} onClick={() => changePage(pagination.next)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
                             <Icon icon="fluent:chevron-right-16-filled" />
                         </button>
                     </div>
