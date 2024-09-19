@@ -1,7 +1,9 @@
 import React from 'react';
 
-const Table = ({ data, columns, twClass }) => {
-
+const Table = ({ data, columns, twClass, onEditProductClick }) => {
+    const handleEditProductClick = (product) => {
+        onEditProductClick(product)
+    }
     return (
         <div className={`${twClass} w-full overflow-x-auto`}>
             <table className="w-full">
@@ -29,6 +31,9 @@ const Table = ({ data, columns, twClass }) => {
                             <td key={`td-products-table-${col.name}`} className={col.td_style}>
                                     <div>
                                     <Component key={`td-dc-products-table-${col.name}`} data={drow}/>
+                                    {
+                                        index === 0 && <div className="cursor-pointer" onClick={()=> handleEditProductClick(drow)}>Edit</div>
+                                    }
                                     </div>
                                 </td>
                             ) : (

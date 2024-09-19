@@ -36,73 +36,83 @@ const selectionOptions = [
 ];
 const salesTagsOptions = [
   { id: "", label: "- Select -" },
-  { id: `Bestseller`, label: `Bestseller` },
-  { id: `Top Choice`, label: `Top Choice` },
+  { id: `bestseller`, label: `Bestseller` },
+  { id: `top choice`, label: `Top Choice` },
 ];
 const paymentTypeOptions = [
-  { id: `Buy`, label: `Buy` },
-  { id: `Rental`, label: `Rental` },
-  { id: `Rent-To-Own`, label: `Rent-To-Own` },
+  { id: `buy`, label: `Buy` },
+  { id: `rental-12`, label: `Rental 12months+` },
+  { id: `rental-6`, label: `Rental 6months+` },
+  { id: `rental-3`, label: `Rental 3months+` },
+  { id: `rto-48`, label: `Rent-To-Own 48months` },
+  { id: `rto-36`, label: `Rent-To-Own 36months` },
+  { id: `rto-24`, label: `Rent-To-Own 24months` },
+  { id: `rto-12`, label: `Rent-To-Own 12months` },
 ];
 
 export const form_fields = [
   {
-    property_name: slug("Container Title", " "),
-    value: "",
+    property_name: "container_title",
+    value: "RTest Used 20 ft Shipping Cointainer Standard 8 ft 6 in High | Used Cargo Worthy CW",
   },
   {
-    property_name: slug("Container Grade Title", " "),
-    value: "",
+    property_name: "container_grade_title",
+    value: "Used Cargo Worthy CW Conex Storage Container",
   },
   {
-    property_name: slug("Container Type", " "),
-    value: "",
+    property_name: "container_type",
+    value: "Dry Van Shipping Container With Double Doors at 1 End",
   },
   {
-    property_name: slug("Location", " "),
+    property_name: "sku",
+    value: "RTEST3000",
+  },
+  {
+    property_name: "location",
     value: "Atlanta, GA",
   },
   {
-    property_name: slug("Size", " "),
-    value: "10'",
+    property_name: "length_width",
+    value: "20'",
   },
   {
-    property_name: slug("Height", " "),
+    property_name: "height",
     value: `8' 6" Standard`,
   },
   {
-    property_name: slug("Grade", " "),
-    value: `Wind and Water tight (WWT)`,
+    property_name: "grade",
+    value: `Cargo Worthy (CW)`,
   },
   {
-    property_name: slug("Condition", " "),
-    value: `New`,
+    property_name: "condition",
+    value: `Used`,
   },
   {
-    property_name: slug("Selection Type", " "),
+    property_name: "selectionoptions",
     value: `First of the Stack (FO)`,
   },
   {
-    property_name: slug("Door Type", " "),
-    value: "",
+    property_name: "doortype",
+    value: "Double Doors at 1 End",
   },
   {
-    property_name: slug("Sales Tags", " "),
-    value: "",
+    property_name: "sales_tags",
+    value: "Bestseller",
+  },
+  // {
+  //   property_name: "store_id",
+  //   value:"121"
+  // },
+  {
+    property_name: "payment_type",
+    value: "buy",
   },
   {
-    property_name: slug("Store ID", " "),
-  },
-  {
-    property_name: slug("Payment Type", " "),
-    value: "Buy",
-  },
-  {
-    property_name: slug("Reefer Container", " "),
+    property_name: "reefer_container",
     value: true,
   },
   {
-    property_name: slug("Reefer Container Status", " "),
+    property_name: "reefer_container_status",
     value: true,
   },
 ];
@@ -114,7 +124,7 @@ export const form_object = [
     elements: [
       {
         label: "Title",
-        property_name: slug("Container Title", " "),
+        property_name: "container_title",
         type: "text",
         validation: {},
         tailwind_style: "",
@@ -122,7 +132,7 @@ export const form_object = [
       },
       {
         label: "Grade Title",
-        property_name: slug("Container Grade Title", " "),
+        property_name: "container_grade_title",
         type: "text",
         validation: {},
         tailwind_style: "",
@@ -130,7 +140,15 @@ export const form_object = [
       },
       {
         label: "Type",
-        property_name: slug("Container Type", " "),
+        property_name: "container_type",
+        type: "text",
+        validation: {},
+        tailwind_style: "",
+        props: {},
+      },
+      {
+        label: "SKU",
+        property_name: "sku",
         type: "text",
         validation: {},
         tailwind_style: "",
@@ -144,7 +162,7 @@ export const form_object = [
     elements: [
       {
         label: "Location",
-        property_name: slug("Location", " "),
+        property_name: "location",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
@@ -154,7 +172,7 @@ export const form_object = [
       },
       {
         label: "Size",
-        property_name: slug("Size", " "),
+        property_name: "length_width",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
@@ -164,7 +182,7 @@ export const form_object = [
       },
       {
         label: "Height",
-        property_name: slug("Height", " "),
+        property_name: "height",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
@@ -174,7 +192,7 @@ export const form_object = [
       },
       {
         label: "Grade",
-        property_name: slug("Grade", " "),
+        property_name: "grade",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
@@ -184,7 +202,7 @@ export const form_object = [
       },
       {
         label: "Condition",
-        property_name: slug("Condition", " "),
+        property_name: "condition",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
@@ -194,7 +212,7 @@ export const form_object = [
       },
       {
         label: "Selection Type",
-        property_name: slug("Selection Type", " "),
+        property_name: "selectionoptions",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
@@ -204,7 +222,7 @@ export const form_object = [
       },
       {
         label: "Door Type",
-        property_name: slug("Door Type", " "),
+        property_name: "doortype",
         type: "text",
         validation: {},
         tailwind_style: "",
@@ -218,25 +236,26 @@ export const form_object = [
     elements: [
       {
         label: "Sales Tags",
-        property_name: slug("Sales Tags", " "),
+        property_name: "sales_tags",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
         props: {},
         selection: salesTagsOptions,
         value: "",
+        style: "col-span-1 sm:col-span-2 md:col-span-2",
       },
-      {
-        label: "Store ID",
-        property_name: slug("Store ID", " "),
-        type: "text",
-        validation: {},
-        tailwind_style: "",
-        props: {},
-      },
+      // {
+      //   label: "Store ID",
+      //   property_name: "store_id",
+      //   type: "text",
+      //   validation: {},
+      //   tailwind_style: "",
+      //   props: {},
+      // },
       {
         label: "Payment Type",
-        property_name: slug("Payment Type", " "),
+        property_name: "payment_type",
         type: "dropdown",
         validation: {},
         tailwind_style: "",

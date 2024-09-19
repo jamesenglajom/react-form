@@ -5,6 +5,7 @@ import TableSortButton from "../../table/sort_button";
 import FilterDropDown from "../../table/filter_dropdown";
 import { Icon } from '@iconify/react';
 import useFetchData from '../../../api/useFetchData';
+import useFetchDepot from '../../../api/useFetchDepot';
 import Modal from "../../modal/index"
 import ProductsDetailsForm from "../../form/product_details";
 import tdName from "../products/td_name"
@@ -73,6 +74,7 @@ const ProductsTable = () => {
     ];
     const [url, setUrl] = useState(base_url);
     let { data, pagination, loading, statistics } = useFetchData(url);
+    let { data:locations } = useFetchDepot();
     const [search, setSearch] = useState("");
     const [post_status, setPostStatus] = useState({ post_status: "all" });
     const [filterObject, setFilterObject] = useState(filters);
@@ -82,12 +84,19 @@ const ProductsTable = () => {
     const [searchfilter, setSearchFilter] = useState("hidden");
     const [filtertabs, setFilterTabs] = useState("");
     const [openFormModal, setOpenFormModal] = useState(false)
+    const [editProduct, setEditProduct] = useState(null)
 
     const handleSearch = (e) => {
         setPage(1);
         setSearch(e.target.value)
         setRefetchFlag(!refetchFlag);
     }
+
+    const handleEditProductClick = (product) => {
+        console.log("handleEditProductClick", product);
+        setEditProduct(product);
+        setOpenFormModal(true);
+    } 
 
     const handleTabSelect = (e) => {
         const { value } = e.target;
@@ -233,10 +242,10 @@ const ProductsTable = () => {
                 <div className={`${searchfilter} py-[1px] px-[3px] flex flex-wrap`}>
                     {filters && filters.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
                 </div>
-                <Table data={data} columns={columns} twClass="py-1"></Table>
+                <Table data={data} columns={columns} onEditProductClick={handleEditProductClick} twClass="py-1"></Table>
             </div>
             <Modal isOpen={openFormModal} onChange={setOpenFormModal}>
-                <ProductsDetailsForm></ProductsDetailsForm>
+                <ProductsDetailsForm locations={locations} update={editProduct}></ProductsDetailsForm>
             </Modal>
         </>
     );
