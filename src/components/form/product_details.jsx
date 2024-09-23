@@ -30,7 +30,7 @@ const ProductsDetailsForm = ({locations, update}) => {
         reefer_container: update["cf_reefer_container"] === "1",
         reefer_container_status: update["cf_reefer_container_status"] === "1",
         sales_tags: update["cf_sales_tags"] ? update["cf_sales_tags"].toLowerCase():"",
-        selectionoptions: update["cf_selectionoptions"][0],
+        selectionoptions: update["cf_selectionoptions"],
         sku: update["sku"],
       }
     }catch(err){
@@ -126,7 +126,7 @@ const ProductsDetailsForm = ({locations, update}) => {
     let formattedData = {
       title: data["container_title"],
       // sku: data["sku"],
-      sku: generateSKU(data),
+      // sku: generateSKU(data),
       custom_fields: {}
     }
 
