@@ -11,7 +11,7 @@ import ProductsDetailsForm from "../../form/product_details";
 import tdName from "../products/td_name"
 import tdPrice from "../products/td_price"
 import ProductTableTabs from '../tabs';
-
+import ImageUploader from '../../images_upload/ImageUploader';
 
 const ProductsTable = () => {
     const base_url = 'https://onsitestorage.com/wp-json/wp_to_react/v1/products';
@@ -75,6 +75,7 @@ const ProductsTable = () => {
     const [url, setUrl] = useState(base_url);
     let { data, pagination, loading, statistics } = useFetchData(url);
     let { data:locations } = useFetchDepot();
+    const [tableData, setTableData] = useState(data);
     const [search, setSearch] = useState("");
     const [post_status, setPostStatus] = useState({ post_status: "all" });
     const [filterObject, setFilterObject] = useState(filters);
@@ -85,6 +86,42 @@ const ProductsTable = () => {
     const [filtertabs, setFilterTabs] = useState("");
     const [openFormModal, setOpenFormModal] = useState(false)
     const [editProduct, setEditProduct] = useState(null)
+    const [imageUploadModal, setImageUploadModal] = useState(false)
+
+    // set data to a local state
+    useEffect(()=>{
+        setTableData(data)
+    },[data]);
+    
+
+    const handleTableDataUpdates = (data) => {
+        console.log("tableData", tableData);
+        console.log("updated data", data);
+        if(data?.["images"]){
+            let images_ids = data["images"].map(i=> i.id);
+            setTableData(prevData =>
+                prevData.map(i => 
+                    parseInt(i.id) === parseInt(data.product_id) ? { ...i, images: data.images, images_ids } : i
+                )
+            );
+            return;
+        }
+
+        if(data?.["image"]){
+            setTableData(prevData =>
+                prevData.map(i => 
+                    parseInt(i.id) === parseInt(data.product_id) ? { ...i, image: data.image } : i
+                )
+            );
+            return;
+        }
+
+        
+        if(data?.["details"]){
+            console.log("update details");
+            return;
+        }
+    }
 
     const handleSearch = (e) => {
         setPage(1);
@@ -92,11 +129,6 @@ const ProductsTable = () => {
         setRefetchFlag(!refetchFlag);
     }
 
-    const handleEditProductClick = (product) => {
-        console.log("handleEditProductClick", product);
-        setEditProduct(product);
-        setOpenFormModal(true);
-    } 
 
     const handleTabSelect = (e) => {
         const { value } = e.target;
@@ -194,6 +226,20 @@ const ProductsTable = () => {
         { Component: null, name: "categories", label: "Categories", th_style: "", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
     ];
 
+
+    
+    const handleEditProductClick = (product) => {
+        console.log("handleEditProductClick", product);
+        setEditProduct(product);
+        setOpenFormModal(true);
+    } 
+
+    
+    const handleEditImageClick = (product) => {
+        console.log("handleEditProductClick", product);
+        setEditProduct(product);
+        setImageUploadModal(true);
+    } 
     return (
         <>
             <div className="rounded-xl border border-stone-300 shadow-md pb-3">
@@ -242,10 +288,13 @@ const ProductsTable = () => {
                 <div className={`${searchfilter} py-[1px] px-[3px] flex flex-wrap`}>
                     {filters && filters.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
                 </div>
-                <Table data={data} columns={columns} onEditProductClick={handleEditProductClick} twClass="py-1"></Table>
+                <Table data={tableData} columns={columns} onEditProductClick={handleEditProductClick} onEditImageClick={handleEditImageClick} twClass="py-1"></Table>
             </div>
             <Modal isOpen={openFormModal} onChange={setOpenFormModal}>
-                <ProductsDetailsForm locations={locations} update={editProduct}></ProductsDetailsForm>
+                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDataUpdates}></ProductsDetailsForm>
+            </Modal>
+            <Modal isOpen={imageUploadModal} onChange={setImageUploadModal}>
+                <ImageUploader update={editProduct} onUpdate={handleTableDataUpdates}></ImageUploader>
             </Modal>
         </>
     );

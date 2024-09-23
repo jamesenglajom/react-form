@@ -3,6 +3,7 @@ import InputField from "../form_elements/input_field";
 import DropdownField from "../form_elements/dropdown_field";
 import CheckboxField from "../form_elements/checkbox_field";
 import ToggleField from "../form_elements/toggle_field";
+import ImageUploader from "../images_upload/ImageUploader";
 import { form_object, form_fields } from "../../static/product_details_form";
 import axios from "axios";
 
@@ -11,24 +12,24 @@ const ProductsDetailsForm = ({locations, update}) => {
     (acc, field) => ({ ...acc, [field.property_name]: field.value ?? "" }),
     {}
   );
-  console.log("default_form_values",default_form_values);
+  // console.log("default_form_values",default_form_values);
   if(update){
     console.log("update: ", update)
     try{
       default_form_values = {
-        condition: update["cf_condition"][0],
-        container_grade_title: update["cf_container_grade_title"][0],
-        container_title: update["cf_container_title"][0],
-        container_type: update["cf_type_selectiontype"]?.[0] ?? "",
-        doortype:  update["cf_doortype"][0],
-        grade: update["cf_grade"][0],
-        height: update["cf_height"][0],
-        length_width:  update["cf_length_width"][0],
-        location: update["cf_location"][0],
-        payment_type: update["cf_payment_type"][0],
-        reefer_container: update["cf_reefer_container"][0] === "1",
-        reefer_container_status: update["cf_reefer_container_status"][0] === "1",
-        sales_tags: update["cf_sales_tags"]?.[0] ? update["cf_sales_tags"][0].toLowerCase():"",
+        condition: update["cf_condition"],
+        container_grade_title: update["cf_container_grade_title"],
+        container_title: update["cf_container_title"],
+        container_type: update["cf_type_selectiontype"] ?? "",
+        doortype:  update["cf_doortype"],
+        grade: update["cf_grade"],
+        height: update["cf_height"],
+        length_width:  update["cf_length_width"],
+        location: update["cf_location"],
+        payment_type: update["cf_payment_type"],
+        reefer_container: update["cf_reefer_container"] === "1",
+        reefer_container_status: update["cf_reefer_container_status"] === "1",
+        sales_tags: update["cf_sales_tags"] ? update["cf_sales_tags"].toLowerCase():"",
         selectionoptions: update["cf_selectionoptions"][0],
         sku: update["sku"],
       }
@@ -37,7 +38,9 @@ const ProductsDetailsForm = ({locations, update}) => {
     }
   }
   const [formData, setFormData] = useState(default_form_values);
+  // insert location options
   form_object[1]["elements"][0]["selection"] = locations.map(i=> ({id:i.title, label: i.title}));
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -62,20 +65,18 @@ const ProductsDetailsForm = ({locations, update}) => {
       .replace(/^-+/, '') // Remove leading dashes
       .replace(/-+$/, ''); // Remove trailing dashes
   }
+
   const createUpdateProduct = async (data) => {
     let API_URL = "https://onsitestorage.com/wp-json/wp_to_react/v1/product";
     if(data["id"]){
-      console.log("id", data["id"]);
       API_URL = API_URL + "/" + data["id"];
     }
     try {
-      console.log("create/update product(data): ", data)
       const response = await axios.post(API_URL, data, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
-      console.log("create response: ", response);
       setFormData(default_form_values);
       // console.log("Successfully Created");
     } catch (error) {
@@ -88,18 +89,7 @@ const ProductsDetailsForm = ({locations, update}) => {
     let data_keys = [];
     // set default value for property
     data["is_product_rent-to-own"] = false;
-    data["payment_term"] = "";
     data["store_id"] = 121; // vna
-    // handle payment term
-    if (data["payment_type"] !== "buy") {
-      let ptype = data["payment_type"].split("-")[0];
-      let pterm = data["payment_type"].split("-")[1];
-      data["payment_type"] = ptype;
-      data["payment_term"] = [parseInt(pterm)];
-      if (ptype === "rto") {
-        data["is_product_rent-to-own"] = true;
-      }
-    }
     // handle permalink value base on container_title
     if(data["container_title"]){
       data["permalink"] = permalinkSlug(data["container_title"]);
@@ -131,10 +121,12 @@ const ProductsDetailsForm = ({locations, update}) => {
       "payment_term",
       "reefer_container",
       "reefer_container_status",
-    ]
+    ];
+
     let formattedData = {
       title: data["container_title"],
-      sku: data["sku"],
+      // sku: data["sku"],
+      sku: generateSKU(data),
       custom_fields: {}
     }
 
@@ -142,7 +134,7 @@ const ProductsDetailsForm = ({locations, update}) => {
       formattedData["id"] = update["id"];
     }
     data_keys = Object.keys(data);
-    console.log("to cf_keys", data_keys);
+    // console.log("to cf_keys", data_keys);
     data_keys.forEach((v, i) => {
       if (custom_fields.includes(v)) {
         tmp_custom_fields[v] = data[v];
@@ -151,6 +143,7 @@ const ProductsDetailsForm = ({locations, update}) => {
     formattedData["custom_fields"] = tmp_custom_fields;
     return formattedData;
   }
+
   return (
     <div className="p-5">
       <div>

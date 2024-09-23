@@ -1,8 +1,11 @@
 import React from 'react';
 
-const Table = ({ data, columns, twClass, onEditProductClick }) => {
+const Table = ({ data, columns, twClass, onEditProductClick, onEditImageClick }) => {
     const handleEditProductClick = (product) => {
         onEditProductClick(product)
+    }
+    const handleEditImageClick = (product) => {
+        onEditImageClick(product)
     }
     return (
         <div className={`${twClass} w-full overflow-x-auto`}>
@@ -32,7 +35,10 @@ const Table = ({ data, columns, twClass, onEditProductClick }) => {
                                     <div>
                                     <Component key={`td-dc-products-table-${col.name}`} data={drow}/>
                                     {
-                                        index === 0 && <div className="cursor-pointer" onClick={()=> handleEditProductClick(drow)}>Edit</div>
+                                        index === 0 && <div className="flex gap-3">
+                                            <div className="cursor-pointer" onClick={()=> handleEditProductClick(drow)}>Edit</div>
+                                            <div className="cursor-pointer" onClick={()=> handleEditImageClick(drow)}>Update Images</div>
+                                        </div>
                                     }
                                     </div>
                                 </td>
