@@ -6,33 +6,47 @@ import ToggleField from "../form_elements/toggle_field";
 import ImageUploader from "../images_upload/ImageUploader";
 import { form_object, form_fields } from "../../static/product_details_form";
 import axios from "axios";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-const ProductsDetailsForm = ({locations, update}) => {
+const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
+  const MySwal = withReactContent(Swal)
   let default_form_values = form_fields.reduce(
     (acc, field) => ({ ...acc, [field.property_name]: field.value ?? "" }),
     {}
   );
+  const [requestError,setRequestError] = useState({});
+  const populateData = (data) => {
+    let form_payment_type = "buy";
+    if(data["cf_payment_type"] !== "buy"){
+      form_payment_type = `${data["cf_payment_type"]}-${data["cf_payment_term"][0]}`; 
+      console.log(form_payment_type);
+    }
+
+    return {
+      condition: data["cf_condition"]??"",
+      container_grade_title: data["cf_container_grade_title"]??"",
+      container_title: data["cf_container_title"]??"",
+      container_type: data["cf_type_selectiontype"] ?? "",
+      doortype:  data["cf_doortype"] ?? "",
+      grade: data["cf_grade"]??"Wind and Water tight (WWT)",
+      height: data["cf_height"] ?? "10'",
+      length_width:  data["cf_length_width"] ?? `8' 6" Starndard`,
+      location: data["cf_location"] ?? "Atlanta, GA",
+      payment_type: form_payment_type,
+      reefer_container: data["cf_reefer_container"] === "1",
+      reefer_container_status: data["cf_reefer_container_status"] === "1",
+      sales_tags: data["cf_sales_tags"] ? data["cf_sales_tags"].toLowerCase():"",
+      selectionoptions: data["cf_selectionoptions"] ?? "First off the Stack (FO)",
+      sku: data["sku"]??"",
+    }
+  }
+
   // console.log("default_form_values",default_form_values);
   if(update){
     console.log("update: ", update)
     try{
-      default_form_values = {
-        condition: update["cf_condition"],
-        container_grade_title: update["cf_container_grade_title"],
-        container_title: update["cf_container_title"],
-        container_type: update["cf_type_selectiontype"] ?? "",
-        doortype:  update["cf_doortype"],
-        grade: update["cf_grade"],
-        height: update["cf_height"],
-        length_width:  update["cf_length_width"],
-        location: update["cf_location"],
-        payment_type: update["cf_payment_type"],
-        reefer_container: update["cf_reefer_container"] === "1",
-        reefer_container_status: update["cf_reefer_container_status"] === "1",
-        sales_tags: update["cf_sales_tags"] ? update["cf_sales_tags"].toLowerCase():"",
-        selectionoptions: update["cf_selectionoptions"],
-        sku: update["sku"],
-      }
+      default_form_values = populateData(update)
     }catch(err){
       console.log("err data", err)
     }
@@ -66,6 +80,57 @@ const ProductsDetailsForm = ({locations, update}) => {
       .replace(/-+$/, ''); // Remove trailing dashes
   }
 
+  useEffect(()=>{
+    handleResponseError();
+  },[requestError]);
+
+  const handleResponseError = () => {
+    console.log("REQUEST ERROR:",requestError);
+    if(requestError.code == 400){
+      if(requestError.message === "DUPLICATE_SKU"){
+        let dupli_html = "";
+        requestError.data.duplicates.forEach((v,i)=>{
+          console.log("dupli", v);
+          dupli_html += `
+          <div class="table w-full border-collapse border border-gray-500 rounded-md mt-1 mb-1">
+            <div class="table-row">
+              <div class="table-cell text-left p-1 font-semibold">
+              Product ID
+              </div>
+              <div class="table-cell text-left p-1">
+              ${v.id}
+              </div>
+            </div>
+            <div  class="table-row">
+              <div class="table-cell text-left p-1 font-semibold">
+              Post Status
+              </div>
+              <div class="table-cell text-left p-1">
+              ${v.status}
+              </div>
+            </div>
+            <div  class="table-row">
+              <div class="table-cell text-left p-1 font-semibold">
+              SKU
+              </div>
+              <div class="table-cell text-left p-1">
+              ${v.sku}
+              </div>
+            </div>
+          </div>
+          `
+        });
+        MySwal.fire({
+          title: requestError.data.title,
+          html:`
+          <div class="w-full text-left">Duplicate Items</div>
+          ${dupli_html}
+          `
+        })
+      }
+    }
+  }
+
   const createUpdateProduct = async (data) => {
     let API_URL = "https://onsitestorage.com/wp-json/wp_to_react/v1/product";
     if(data["id"]){
@@ -76,8 +141,25 @@ const ProductsDetailsForm = ({locations, update}) => {
         headers: {
           'Content-Type': 'application/json',
         }
+      }).then((response) => {
+        // Handle the response
+        console.log("update details response:", response.data);
+        if (update) {
+          let populated_data = populateData(response.data.product);
+          setFormData(populated_data);
+          onUpdate(response.data.product);
+          // formModalState(false); // close modal
+        }else{
+          setFormData(default_form_values);
+          formModalState(false); // close modal
+        }
+      }).catch((error) => {
+        // Handle the error
+        // console.error("update details error:", error);
+        if(error.response.data.code == 400){
+          setRequestError(error.response.data);
+        }
       });
-      setFormData(default_form_values);
       // console.log("Successfully Created");
     } catch (error) {
       console.error('Error:', error);
@@ -116,7 +198,7 @@ const ProductsDetailsForm = ({locations, update}) => {
       "condition",
       "selectionoptions",
       "doortype",
-      "sales_tag",
+      "sales_tags",
       "payment_type",
       "payment_term",
       "reefer_container",
@@ -125,8 +207,6 @@ const ProductsDetailsForm = ({locations, update}) => {
 
     let formattedData = {
       title: data["container_title"],
-      // sku: data["sku"],
-      // sku: generateSKU(data),
       custom_fields: {}
     }
 
@@ -143,6 +223,7 @@ const ProductsDetailsForm = ({locations, update}) => {
     formattedData["custom_fields"] = tmp_custom_fields;
     return formattedData;
   }
+
 
   return (
     <div className="p-5">
@@ -183,7 +264,6 @@ const ProductsDetailsForm = ({locations, update}) => {
                             name={input_el.property_name}
                             value={formData[input_el.property_name]}
                             onChange={handleChange}
-
                           />
                         )}
                       {/* dropdown */}

@@ -30,7 +30,7 @@ const conditionOptions = [
   { id: `Refurbished`, label: `Refurbished` },
 ];
 const selectionOptions = [
-  { id: `First of the Stack (FO)`, label: `First of the Stack (FO)` },
+  { id: `First off the Stack (FO)`, label: `First off the Stack (FO)` },
   { id: `Exclusive Pool (EP)`, label: `Exclusive Pool (EP)` },
   { id: `You Pick (UP)`, label: `You Pick (UP)` },
 ];
@@ -53,35 +53,42 @@ const paymentTypeOptions = [
 export const form_fields = [
   {
     property_name: "container_title",
-    value: "RTest Used 20 ft Shipping Cointainer Standard 8 ft 6 in High | Used Cargo Worthy CW",
+    value:"",
+    // value: "RTest Used 20 ft Shipping Cointainer Standard 8 ft 6 in High | Used Cargo Worthy CW",
   },
   {
     property_name: "container_grade_title",
-    value: "Used Cargo Worthy CW Conex Storage Container",
+    value:"",
+    // value: "Used Cargo Worthy CW Conex Storage Container",
   },
   {
     property_name: "container_type",
-    value: "Dry Van Shipping Container With Double Doors at 1 End",
+    value:"",
+    // value: "Dry Van Shipping Container With Double Doors at 1 End",
   },
   {
     property_name: "sku",
-    value: "RTEST3000",
+    value:"",
+    // value: "RTEST3000",
   },
   {
     property_name: "location",
+    // value:"",
     value: "Atlanta, GA",
   },
   {
     property_name: "length_width",
+    // value:"",
     value: "20'",
   },
   {
     property_name: "height",
+    // value:"",
     value: `8' 6" Standard`,
   },
   {
     property_name: "grade",
-    value: `Cargo Worthy (CW)`,
+    value: `Wind and Water tight (WWT)`,
   },
   {
     property_name: "condition",
@@ -97,7 +104,7 @@ export const form_fields = [
   },
   {
     property_name: "sales_tags",
-    value: "Bestseller",
+    value: "bestseller",
   },
   // {
   //   property_name: "store_id",

@@ -84,7 +84,7 @@ const ProductsTable = () => {
     const [page, setPage] = useState(1);
     const [searchfilter, setSearchFilter] = useState("hidden");
     const [filtertabs, setFilterTabs] = useState("");
-    const [openFormModal, setOpenFormModal] = useState(false)
+    const [formModal, setFormModal] = useState(false)
     const [editProduct, setEditProduct] = useState(null)
     const [imageUploadModal, setImageUploadModal] = useState(false)
 
@@ -93,10 +93,17 @@ const ProductsTable = () => {
         setTableData(data)
     },[data]);
     
+    const handleTableDetailUpdates = (data) => {
+        console.log("UPDATE DETAILS", data);
+        setTableData(prevData =>
+            prevData.map(i => 
+                parseInt(i.id) === parseInt(data.id) ? { ...i, ...data } : i
+            )
+        );
+    }
 
-    const handleTableDataUpdates = (data) => {
-        console.log("tableData", tableData);
-        console.log("updated data", data);
+
+    const handleTableImageUpdates = (data) => {
         if(data?.["images"]){
             let images_ids = data["images"].map(i=> i.id);
             setTableData(prevData =>
@@ -113,12 +120,6 @@ const ProductsTable = () => {
                     parseInt(i.id) === parseInt(data.product_id) ? { ...i, image: data.image } : i
                 )
             );
-            return;
-        }
-
-        
-        if(data?.["details"]){
-            console.log("update details");
             return;
         }
     }
@@ -226,17 +227,20 @@ const ProductsTable = () => {
         { Component: null, name: "categories", label: "Categories", th_style: "", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
     ];
 
-
+    const handleCreateProduct = () => {
+        setEditProduct(null);
+        setFormModal(true);
+    }
     
     const handleEditProductClick = (product) => {
-        console.log("handleEditProductClick", product);
+        // console.log("handleEditProductClick", product);
         setEditProduct(product);
-        setOpenFormModal(true);
+        setFormModal(true);
     } 
 
     
-    const handleEditImageClick = (product) => {
-        console.log("handleEditProductClick", product);
+    const handleEditImageClick = (product) => { 
+        // console.log("handleEditProductClick", product);
         setEditProduct(product);
         setImageUploadModal(true);
     } 
@@ -247,7 +251,7 @@ const ProductsTable = () => {
                 <div className='p-[7px] flex items-center justify-between'>
                     <div className='text-lg font-bold'>Products</div>
                     <div>
-                        <button onClick={() => setOpenFormModal(true)} className="px-3 py-1 text-xs font-bold bg-green-700 hover:bg-green-600 rounded text-white">Create</button>
+                        <button onClick={handleCreateProduct} className="px-3 py-1 text-xs font-bold bg-green-700 hover:bg-green-600 rounded text-white">Create</button>
                     </div>
                 </div>
                 {/* search, filter, columns */}
@@ -290,11 +294,11 @@ const ProductsTable = () => {
                 </div>
                 <Table data={tableData} columns={columns} onEditProductClick={handleEditProductClick} onEditImageClick={handleEditImageClick} twClass="py-1"></Table>
             </div>
-            <Modal isOpen={openFormModal} onChange={setOpenFormModal}>
-                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDataUpdates}></ProductsDetailsForm>
+            <Modal isOpen={formModal} onChange={setFormModal}>
+                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDetailUpdates} formModalState={setFormModal}></ProductsDetailsForm>
             </Modal>
             <Modal isOpen={imageUploadModal} onChange={setImageUploadModal}>
-                <ImageUploader update={editProduct} onUpdate={handleTableDataUpdates}></ImageUploader>
+                <ImageUploader update={editProduct} onUpdate={handleTableImageUpdates}></ImageUploader>
             </Modal>
         </>
     );
