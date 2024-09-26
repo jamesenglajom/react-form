@@ -148,7 +148,7 @@ const InputImages = ({ update, onUpdate }) => {
           const {message} = error.response.data;
           Swal.fire({
             title:message,
-            text: "Set Generic Image Attachment feature did not found any relative product base on condition, grade, size and height from the published status. Please upload images instead."
+            text: "Set Generic Image Attachment feature did not find any relative product base on condition, grade, size and height from the published status. Please upload images instead."
           });
           setProcessing(false);
         });
