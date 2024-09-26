@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Icon } from '@iconify/react';
+import Swal from 'sweetalert2';
 
 const InputImages = ({ update, onUpdate }) => {
   const fileInputRef = useRef(null);
@@ -142,7 +143,13 @@ const InputImages = ({ update, onUpdate }) => {
         })
         .catch((error) => {
           // Handle the error
-          console.error("generic images error:", error);
+          console.error("generic images error:", error.response);
+          // console.log("message", message)
+          const {message} = error.response.data;
+          Swal.fire({
+            title:message,
+            text: "Set Generic Image Attachment feature did not found any relative product base on condition, grade, size and height from the published status. Please upload images instead."
+          });
           setProcessing(false);
         });
     }
