@@ -11,12 +11,13 @@ export default function tdName({data}) {
             <div className="grid grid-cols-1 gap-2">
                 <div className="font-semibold text-stone-700 pt-2">{data.name}</div>
                 <div className="font-semibold border-t pt-2 border-stone-300">{data.cf_container_title}</div>
+                <div className="font-semibold border-t pt-2 border-stone-300 text-stone-700">{data.cf_location}</div>
                 <div className="font-semibold border-t pt-2 border-stone-300">
                 <div className="w-full table text-stone-700">
-                  <div className="table-row">
+                  {/* <div className="table-row">
                     <div className="table-cell p-1  font-bold">Location </div>
                     <div className="table-cell p-1">{data.cf_location}</div>
-                  </div>
+                  </div> */}
                   <div className="table-row">
                     <div className="table-cell p-1 font-bold">Condition </div>
                     <div className="table-cell p-1">{data.cf_condition}</div>
@@ -47,9 +48,10 @@ export default function tdName({data}) {
                   </div>
                 </div>
                 </div>
+                <div className="font-semibold border-t pt-2 border-stone-300 text-stone-700">SKU: {data.sku}</div>
                 <div className="font-semibold border-t pt-2 border-stone-300">{data.cf_container_grade_title}</div>
-                <div className="font-semibold border-t pt-2 border-stone-300">{data.cf_type}</div>
-                <div className="text-stone-900"><span className="font-semibold">SKU: </span>{data.sku}</div>
+                <div className="font-semibold border-t pt-2 border-stone-300">{data.categories.join(", ")}</div>
+                <div className="font-semibold border-t pt-2 border-stone-300 text-indigo-600 text-3xl">${data.price}</div>
                 <div className={data.stocks>0 ? 'text-green-500':'text-stone-500'}>STOCKS ({data.stocks??0})</div>
                 {
                   data.post_status === 'publish' ? 
