@@ -2,25 +2,25 @@ import React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 import Table from "../../table/index";
 import TableSortButton from "../../table/sort_button";
-import FilterDropDown from "../../table/filter_dropdown";
+// import FilterDropDown from "../../table/filter_dropdown";
 import { Icon } from '@iconify/react';
-import useFetchData from '../../../api/useFetchData';
+// import useFetchData from '../../../api/useFetchData';
 import useFetchDepot from '../../../api/useFetchDepot';
 import Modal from "../../modal/index"
 import ProductsDetailsForm from "../../form/product_details";
 import tdName from "../products/td_name"
-import tdPrice from "../products/td_price"
 import ProductTableTabs from '../tabs';
 import ImageUploader from '../../images_upload/ImageUploader';
+import axios from "axios";
 
 const ProductsTable = () => {
     const base_url = 'https://onsitestorage.com/wp-json/wp_to_react/v1/products';
     const tabs = [
         { id: 'all', label: "All" },
         { id: 'publish', label: "Published" },
-        { id: 'draft', label: "Drafts" },
+        // { id: 'draft', label: "Drafts" },
         { id: 'private', label: "Private" },
-        { id: 'trash', label: "Trash" },
+        // { id: 'trash', label: "Trash" },
     ];
     const filters = [
         {
@@ -73,50 +73,99 @@ const ProductsTable = () => {
         { id: "modified_date", label: "Modified Date" },
     ];
     const [url, setUrl] = useState(base_url);
-    let { data, pagination, loading, statistics } = useFetchData(url);
-    let { data:locations } = useFetchDepot();
-    const [tableData, setTableData] = useState(data);
+    // let { data, pagination, loading, statistics } = useFetchData(url);
+    let { data: locations } = useFetchDepot();
+    const [tableData, setTableData] = useState([]);
     const [search, setSearch] = useState("");
     const [post_status, setPostStatus] = useState({ post_status: "all" });
     const [filterObject, setFilterObject] = useState(filters);
-    const [sort, setSort] = useState({ orderby: 'modified_date', order: 'asc' });
+    const [sort, setSort] = useState({ orderby: 'modified_date', order: 'desc' });
     const [refetchFlag, setRefetchFlag] = useState(false); // filter flag
     const [page, setPage] = useState(1);
     const [searchfilter, setSearchFilter] = useState("hidden");
     const [filtertabs, setFilterTabs] = useState("");
     const [formModal, setFormModal] = useState(false)
     const [editProduct, setEditProduct] = useState(null)
-    const [imageUploadModal, setImageUploadModal] = useState(false)
+    const [imageUploadModal, setImageUploadModal] = useState(false);
+
+
+    // table 
+    const [data, setData] = useState([]);
+    const [pagination, setPagination] = useState([]);
+    const [count, setCount] = useState(0);
+    const [statistics, setStatistic] = useState([]);
+    const [loading, setFetchLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+
+    
+
+    useEffect(() => {
+        const fetchProductsUrl = () => {
+            let params = generateUrlParams(getAllParams());
+            return base_url + '?' + params;
+        }
+        const fetchProducts = async () => {
+            console.log("fetch url",fetchProductsUrl());
+            try {
+                setFetchLoading(true);
+                axios.get(fetchProductsUrl())
+                    .then(response => {
+                        console.log(response.data)
+                        setData(response.data.products);
+                        setPagination(response.data.pagination);
+                        setCount(response.data.count);
+                        setStatistic(response.data.status_statistics);
+                        setFetchLoading(false);
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        setError(error);
+                        setFetchLoading(false);
+                    });
+            } catch (err) {
+                setError(err);
+            }
+        };
+        fetchProducts();
+    }, [refetchFlag]);
 
     // set data to a local state
-    useEffect(()=>{
+    useEffect(() => {
         setTableData(data)
-    },[data]);
-    
+    }, [data]);
+
     const handleTableDetailUpdates = (data) => {
         console.log("UPDATE DETAILS", data);
         setTableData(prevData =>
-            prevData.map(i => 
+            prevData.map(i =>
                 parseInt(i.id) === parseInt(data.id) ? { ...i, ...data } : i
             )
         );
     }
 
+    const handleRefetchDataAfterProductCreate = () => {
+        setFormModal(false);
+        setPage(1);
+        setSort({orderby: 'modified_date', order: 'desc'});
+        setPostStatus({post_status:'all'})
+        setRefetchFlag(!refetchFlag);
+    }
 
     const handleTableImageUpdates = (data) => {
-        if(data?.["images"]){
-            let images_ids = data["images"].map(i=> i.id);
+        if (data?.["images"]) {
+            let images_ids = data["images"].map(i => i.id);
             setTableData(prevData =>
-                prevData.map(i => 
+                prevData.map(i =>
                     parseInt(i.id) === parseInt(data.product_id) ? { ...i, images: data.images, images_ids } : i
                 )
             );
             return;
         }
 
-        if(data?.["image"]){
+        if (data?.["image"]) {
             setTableData(prevData =>
-                prevData.map(i => 
+                prevData.map(i =>
                     parseInt(i.id) === parseInt(data.product_id) ? { ...i, image: data.image } : i
                 )
             );
@@ -179,31 +228,27 @@ const ProductsTable = () => {
         return temp;
     }
 
-    const refetchtable = () => {
-        let params = generateUrlParams(getAllParams());
-        let new_url = base_url + '?' + params;
-        console.log(params)
-        setUrl(new_url)
-    }
 
     const handleFilterChange = (e) => {
         let temp = filterObject;
         let index = findIndexByName(temp, e.name)
         temp[index]['value'] = e.value;
         setPage(1);
-        setRefetchFlag(!refetchFlag);
         setFilterObject(temp);
+        setRefetchFlag(!refetchFlag);
     }
 
     const handleSortChange = (v) => {
         let temp = sort, vtemp = Object.entries(v).pop();
         temp[vtemp[0]] = vtemp[1];
         setRefetchFlag(!refetchFlag);
+        console.log("sort", temp);
         setSort(temp);
     }
 
     const changePage = (to_page) => {
-        setPage(to_page);
+        console.log("triggered Change Page:", to_page)
+        setPage((prev)=>to_page);
         setRefetchFlag(!refetchFlag);
     }
 
@@ -217,10 +262,6 @@ const ProductsTable = () => {
         setFilterTabs("")
     }
 
-    useEffect(() => {
-        refetchtable();
-    }, [refetchFlag]);
-
     const columns = [
         { Component: tdName, name: "name", label: "Name", th_style: "", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
         // { Component: tdPrice, name: "price", label: "Price", th_style: "min-w-[200px] max-w-[200px] w-[200px] text-center justify-center", th_align: "text-center", td_style: "p-[5px] text-xs font-semibold text-indigo-400 justify-center text-center" },
@@ -231,19 +272,19 @@ const ProductsTable = () => {
         setEditProduct(null);
         setFormModal(true);
     }
-    
+
     const handleEditProductClick = (product) => {
         // console.log("handleEditProductClick", product);
         setEditProduct(product);
         setFormModal(true);
-    } 
+    }
 
-    
-    const handleEditImageClick = (product) => { 
+
+    const handleEditImageClick = (product) => {
         // console.log("handleEditProductClick", product);
         setEditProduct(product);
         setImageUploadModal(true);
-    } 
+    }
     return (
         <>
             <div className="rounded-xl border border-stone-300 shadow-md pb-3">
@@ -280,22 +321,22 @@ const ProductsTable = () => {
                     {/* sort and paginate buttons */}
                     <div className={`${''} min-w-[118px] flex items-center justify-end`}>
                         <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort} disabled={loading}></TableSortButton>
-                        <button disabled={pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
+                        <button disabled={pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} data-page={pagination.prev} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
                             <Icon icon="fluent:chevron-left-16-filled" />
                         </button>
-                        <button disabled={pagination.next ? false : true} onClick={() => changePage(pagination.next)} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
+                        <button disabled={pagination.next ? false : true} onClick={() => changePage(pagination.next)} data-page={pagination.next} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
                             <Icon icon="fluent:chevron-right-16-filled" />
                         </button>
                     </div>
                 </div>
                 {/* search and filter filter badges */}
                 <div className={`${searchfilter} py-[1px] px-[3px] flex flex-wrap`}>
-                    {filters && filters.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
+                    {/* {filters && filters.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))} */}
                 </div>
                 <Table data={tableData} columns={columns} onEditProductClick={handleEditProductClick} onEditImageClick={handleEditImageClick} twClass="py-1"></Table>
             </div>
             <Modal isOpen={formModal} onChange={setFormModal}>
-                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDetailUpdates} formModalState={setFormModal}></ProductsDetailsForm>
+                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDetailUpdates} onAddProduct={handleRefetchDataAfterProductCreate}></ProductsDetailsForm>
             </Modal>
             <Modal isOpen={imageUploadModal} onChange={setImageUploadModal}>
                 <ImageUploader update={editProduct} onUpdate={handleTableImageUpdates}></ImageUploader>

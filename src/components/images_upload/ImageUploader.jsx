@@ -117,6 +117,10 @@ const InputImages = ({ update, onUpdate }) => {
         setProcessing(false);
       });
   }
+
+  const postSetGenericImageAttachments = () =>{
+    
+  }
   return (
     <div className="p-5">
       <div className="font-bold text-lg m">Product Images</div>
@@ -188,6 +192,10 @@ const InputImages = ({ update, onUpdate }) => {
           </li>
         ))}
       </ul>
+
+      <div className="mt-5">
+        <button className="bg-stone-800 text-white hover:bg-stone-700 px-3 py-1 rounded-sm" onClick={postSetGenericImageAttachments}>Set Generic Image Attachements</button>
+      </div>
     </div>
   );
 };

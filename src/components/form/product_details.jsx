@@ -9,7 +9,7 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
+const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   const MySwal = withReactContent(Swal)
 
   let default_form_values = form_fields.reduce(
@@ -163,10 +163,9 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
           let populated_data = populateData(response.data.product);
           setFormData(populated_data);
           onUpdate(response.data.product);
-          // formModalState(false); // close modal
         }else{
           setFormData(default_form_values);
-          formModalState(false); // close modal
+          onAddProduct();
         }
       }).catch((error) => {
         // Handle the error

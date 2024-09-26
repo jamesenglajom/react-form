@@ -76,7 +76,7 @@ export const form_fields = [
   },
   {
     property_name: "categories",
-    value:[],
+    value:["Uncategorized"],
   },
   {
     property_name: "sku",
@@ -141,7 +141,7 @@ export const form_object = [
     group_style: "",
     elements: [
       {
-        label: "Title",
+        label: "Title (Auto-generated)",
         property_name: "title",
         type: "text",
         validation: {},

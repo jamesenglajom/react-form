@@ -6,7 +6,6 @@ const CategoryField = ({label, value, onChange})=>{
 
     useEffect(()=>{
         let initialValue = categoryList.filter(i=> value.includes(i.name)).map(i=> i.id);
-        console.log("initialValue",initialValue);
         setSelectedCategories(initialValue);
     },[categoryList]);
 
@@ -25,6 +24,7 @@ const CategoryField = ({label, value, onChange})=>{
         } else {
           setSelectedCategories(selectedCategories.filter((id) => parseInt(id) !== parseInt(value)));
         }
+        console.log("selectedCategories",selectedCategories);
         onChange({target:{name:"categories", type:"product_category", value: selectedCategories}})
     }
 
