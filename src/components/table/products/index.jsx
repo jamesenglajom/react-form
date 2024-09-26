@@ -160,7 +160,6 @@ const ProductsTable = () => {
                     parseInt(i.id) === parseInt(data.product_id) ? { ...i, images: data.images, images_ids } : i
                 )
             );
-            return;
         }
 
         if (data?.["image"]) {
@@ -169,7 +168,6 @@ const ProductsTable = () => {
                     parseInt(i.id) === parseInt(data.product_id) ? { ...i, image: data.image } : i
                 )
             );
-            return;
         }
     }
 
