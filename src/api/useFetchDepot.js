@@ -12,7 +12,7 @@ const useFetchDepot = () => {
         setFetchLoading(true);
         axios.get('https://onsitestorage.com/wp-json/wp_to_react/v1/stores')
           .then(response => {
-            setData(response.data.stores);
+            setData(response.data.stores.sort((a, b) => a.title.localeCompare(b.title)));
             setCount(response.data.count);
             setFetchLoading(false);
           })

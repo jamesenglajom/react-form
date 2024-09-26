@@ -44,9 +44,12 @@ const Table = ({ data, columns, twClass, onEditProductClick, onEditImageClick })
                                 </td>
                             ) : (
                             <td key={`td-products-table-${col.name}`} className={col.td_style}>
-                                <div>
-                                    {drow[col.name]}
-                                </div>
+                                {
+                                    col.name.toLowerCase() === "categories" ?
+                                    <div>{drow[col.name].join(" | ")}</div>
+                                    :
+                                    <div>{drow[col.name]}</div>
+                                }
                             </td>
                             )
                         })}

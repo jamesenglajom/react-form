@@ -3,7 +3,7 @@ import InputField from "../form_elements/input_field";
 import DropdownField from "../form_elements/dropdown_field";
 import CheckboxField from "../form_elements/checkbox_field";
 import ToggleField from "../form_elements/toggle_field";
-import ImageUploader from "../images_upload/ImageUploader";
+import CategoryField from "../form_elements/category_field";
 import { form_object, form_fields } from "../../static/product_details_form";
 import axios from "axios";
 import Swal from 'sweetalert2';
@@ -11,10 +11,20 @@ import withReactContent from 'sweetalert2-react-content';
 
 const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
   const MySwal = withReactContent(Swal)
+
   let default_form_values = form_fields.reduce(
     (acc, field) => ({ ...acc, [field.property_name]: field.value ?? "" }),
     {}
   );
+
+  useEffect(()=>{
+    if(!update){
+      setFormData({
+        ...formData,
+        ["location"]: locations[0]["title"],
+      });
+    }
+  },[locations]);
   const [requestError,setRequestError] = useState({});
   const populateData = (data) => {
     let form_payment_type = "buy";
@@ -24,6 +34,9 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
     }
 
     return {
+      title: data["name"]??"",
+      price: data["price"]??0,
+      categories: data["categories"]??[],
       condition: data["cf_condition"]??"",
       container_grade_title: data["cf_container_grade_title"]??"",
       container_title: data["cf_container_title"]??"",
@@ -44,7 +57,6 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
 
   // console.log("default_form_values",default_form_values);
   if(update){
-    console.log("update: ", update)
     try{
       default_form_values = populateData(update)
     }catch(err){
@@ -53,14 +65,17 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
   }
   const [formData, setFormData] = useState(default_form_values);
   // insert location options
-  form_object[1]["elements"][0]["selection"] = locations.map(i=> ({id:i.title, label: i.title}));
+  form_object[2]["elements"][0]["selection"] = locations.map(i=> ({id:i.title, label: i.title}));
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const property_value = type === "checkbox" ? checked : value;
+    
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: property_value,
     });
+    console.log("formData:", formData);
   };
 
   const handleSubmit = (e) => {
@@ -206,7 +221,9 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
     ];
 
     let formattedData = {
-      title: data["container_title"],
+      title: data["title"],
+      categories: data["categories"],
+      price: data["price"],
       custom_fields: {}
     }
 
@@ -229,7 +246,7 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
     <div className="p-5">
       <div>
         <div className="border-b-[2px] border-stone-500 p-2 font-bold">
-          Product Details Form
+          Product Form
         </div>
         <div className="border-stone-400 pb-3">
           <form onSubmit={handleSubmit}>
@@ -300,6 +317,17 @@ const ProductsDetailsForm = ({locations, update, formModalState, onUpdate}) => {
                           onChange={handleChange}
                           selection={input_el.selection}
 
+                        />
+                      )}
+                      {/* product category */}
+                      {["product_category"].includes(input_el.type) && (
+                        <CategoryField
+                          label={input_el.label}
+                          name={input_el.property_name}
+                          value={formData[input_el.property_name]}
+                          onChange={handleChange}
+                          // type={input_el.type}
+                          // checked={formData[input_el.property_name]}
                         />
                       )}
                     </div>

@@ -222,9 +222,9 @@ const ProductsTable = () => {
     }, [refetchFlag]);
 
     const columns = [
-        { Component: tdName, name: "name", label: "Name", th_style: "min-w-[450px] max-w-[450px] w-[450px]", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
-        { Component: tdPrice, name: "price", label: "Price", th_style: "min-w-[200px] max-w-[200px] w-[200px] text-center justify-center", th_align: "text-center", td_style: "p-[5px] text-xs font-semibold text-indigo-400 justify-center text-center" },
-        { Component: null, name: "categories", label: "Categories", th_style: "", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
+        { Component: tdName, name: "name", label: "Name", th_style: "", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
+        // { Component: tdPrice, name: "price", label: "Price", th_style: "min-w-[200px] max-w-[200px] w-[200px] text-center justify-center", th_align: "text-center", td_style: "p-[5px] text-xs font-semibold text-indigo-400 justify-center text-center" },
+        // { Component: null, name: "categories", label: "Categories", th_style: "", th_align: "text-left", td_style: "p-[5px] text-xs font-semibold text-indigo-400" },
     ];
 
     const handleCreateProduct = () => {

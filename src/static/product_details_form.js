@@ -52,6 +52,14 @@ const paymentTypeOptions = [
 
 export const form_fields = [
   {
+    property_name: "title",
+    value:"",
+  },
+  {
+    property_name: "price",
+    value:0,
+  },
+  {
     property_name: "container_title",
     value:"",
     // value: "RTest Used 20 ft Shipping Cointainer Standard 8 ft 6 in High | Used Cargo Worthy CW",
@@ -67,14 +75,17 @@ export const form_fields = [
     // value: "Dry Van Shipping Container With Double Doors at 1 End",
   },
   {
+    property_name: "categories",
+    value:[],
+  },
+  {
     property_name: "sku",
     value:"",
-    // value: "RTEST3000",
   },
   {
     property_name: "location",
     // value:"",
-    value: "Atlanta, GA",
+    value: "",
   },
   {
     property_name: "length_width",
@@ -126,11 +137,57 @@ export const form_fields = [
 
 export const form_object = [
   {
-    name: "Container Details",
+    name: "Product Details",
     group_style: "",
     elements: [
       {
         label: "Title",
+        property_name: "title",
+        type: "text",
+        validation: {},
+        tailwind_style: "",
+        props: {},
+      },
+      // {
+      //   label: "Description",
+      //   property_name: "description",
+      //   type: "text",
+      //   validation: {},
+      //   tailwind_style: "",
+      //   props: {},
+      // },
+      {
+        label: "SKU (Auto-generated)",
+        property_name: "sku",
+        type: "text",
+        validation: {},
+        tailwind_style: "",
+        props: {},
+      },
+      {
+        label: "Price",
+        property_name: "price",
+        type: "number",
+        validation: {},
+        tailwind_style: "",
+        props: {},
+      },
+      {
+        label: "Category",
+        property_name: "categories",
+        type: "product_category",
+        validation: {},
+        tailwind_style: "",
+        props: {},
+      },
+    ],
+  },
+  {
+    name: "Container Details",
+    group_style: "",
+    elements: [
+      {
+        label: "Title (Auto-generated)",
         property_name: "container_title",
         type: "text",
         validation: {},
@@ -148,14 +205,6 @@ export const form_object = [
       {
         label: "Type",
         property_name: "container_type",
-        type: "text",
-        validation: {},
-        tailwind_style: "",
-        props: {},
-      },
-      {
-        label: "SKU",
-        property_name: "sku",
         type: "text",
         validation: {},
         tailwind_style: "",
