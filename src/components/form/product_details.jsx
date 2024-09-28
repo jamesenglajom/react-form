@@ -71,11 +71,12 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     const { name, value, type, checked } = e.target;
     const property_value = type === "checkbox" ? checked : value;
     
-    setFormData({
-      ...formData,
+    setFormData((prev) => {
+      return {
+      ...prev,
       [name]: property_value,
+      }
     });
-    console.log("formData:", formData);
   };
 
   const handleSubmit = (e) => {
@@ -83,7 +84,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     // console.log("Form submitted:", formData);
     console.log("formatted data: ", formatData(formData));
     // Handle form submission
-    createUpdateProduct(formatData(formData));
+    // createUpdateProduct(formatData(formData));
   };
 
   const permalinkSlug = (title) => {

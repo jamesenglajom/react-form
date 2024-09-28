@@ -2,7 +2,7 @@ import React, {useEffect,useState} from "react";
 import axios from "axios";
 const CategoryField = ({label, value, onChange})=>{
     const [categoryList, setCategoryList] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState(value);
 
     useEffect(()=>{
         let initialValue = categoryList.filter(i=> value.includes(i.name)).map(i=> i.id);
@@ -17,15 +17,17 @@ const CategoryField = ({label, value, onChange})=>{
     });
     },[]);
 
+    useEffect(()=>{
+        onChange({target:{name:"categories", type:"product_category", value: selectedCategories}})
+    },[selectedCategories])
+
     const handleChange = (event) => {
         const { value, checked } = event.target;
         if (checked) {
-          setSelectedCategories([...selectedCategories, parseInt(value)]);
+            setSelectedCategories((prev) => [...prev, parseInt(value)]);
         } else {
-          setSelectedCategories(selectedCategories.filter((id) => parseInt(id) !== parseInt(value)));
+            setSelectedCategories((prev) => prev.filter((id) => parseInt(id) !== parseInt(value)));
         }
-        console.log("selectedCategories",selectedCategories);
-        onChange({target:{name:"categories", type:"product_category", value: selectedCategories}})
     }
 
     return (
@@ -46,7 +48,7 @@ const CategoryField = ({label, value, onChange})=>{
                                 value={category.id}
                                 type="checkbox"
                                 onChange={handleChange}
-                                checked={selectedCategories? selectedCategories.includes(category.id): false}
+                                checked={selectedCategories.includes(category.id)}
                                 className="mr-2"/>
 
                                 {category.name}

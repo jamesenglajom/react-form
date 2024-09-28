@@ -331,7 +331,7 @@ const ProductsTable = () => {
                 <div className={`${searchfilter} py-[1px] px-[3px] flex flex-wrap`}>
                     {/* {filters && filters.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))} */}
                 </div>
-                <Table data={tableData} columns={columns} onEditProductClick={handleEditProductClick} onEditImageClick={handleEditImageClick} twClass="py-1"></Table>
+                <Table data={tableData} columns={columns} onEditProductClick={handleEditProductClick} onEditImageClick={handleEditImageClick} fetchingData={loading} twClass="py-1"></Table>
             </div>
             <Modal isOpen={formModal} onChange={setFormModal}>
                 <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDetailUpdates} onAddProduct={handleRefetchDataAfterProductCreate}></ProductsDetailsForm>
