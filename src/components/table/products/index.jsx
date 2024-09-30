@@ -2,9 +2,9 @@ import React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 import Table from "../../table/index";
 import TableSortButton from "../../table/sort_button";
-// import FilterDropDown from "../../table/filter_dropdown";
+import FilterDropDown from "../../table/filter_dropdown";
 import { Icon } from '@iconify/react';
-// import useFetchData from '../../../api/useFetchData';
+import useFetchData from '../../../api/useFetchData';
 import useFetchDepot from '../../../api/useFetchDepot';
 import Modal from "../../modal/index"
 import ProductsDetailsForm from "../../form/product_details";
@@ -22,49 +22,6 @@ const ProductsTable = () => {
         { id: 'private', label: "Private" },
         // { id: 'trash', label: "Trash" },
     ];
-    const filters = [
-        {
-            title: "Seo Score", name: 'seo_score', default: [], options: [
-                { id: 'seo_ni', label: "Needs Improvement" },
-                { id: 'seo_ok', label: "OK" },
-                { id: 'seo_good', label: "Good" },
-                { id: 'seo_no_focus', label: "No Focus Key Phrase" },
-                { id: 'seo_pni', label: "Post No Indexed" }
-            ], value: []
-        },
-        {
-            title: "Readability Score", name: 'readability_score', default: [], options: [
-                { id: 'read_ni', label: "Needs Improvement" },
-                { id: 'read_ok', label: "OK" },
-                { id: 'read_good', label: "Good" },
-            ], value: []
-        },
-        {
-            title: "Category", name: 'category', default: [], options: [
-                { id: 'option1', label: "Option1" },
-                { id: 'option2', label: "Option2" },
-                { id: 'option3', label: "Option3" },
-                { id: 'option4', label: "Option4" },
-
-            ], value: []
-        },
-        {
-            title: "Type", name: 'type', default: [], options: [
-                { id: 'option1', label: "Option1" },
-                { id: 'option2', label: "Option2" },
-                { id: 'option3', label: "Option3" },
-                { id: 'option4', label: "Option4" },
-            ], value: []
-        },
-        {
-            title: "Stock Status", name: 'stock_status', default: [], options: [
-                { id: 'option1', label: "Option1" },
-                { id: 'option2', label: "Option2" },
-                { id: 'option3', label: "Option3" },
-                { id: 'option4', label: "Option4" },
-            ], value: []
-        },
-    ];
     const sorter = [
         { id: "name", label: "Name" },
         { id: "sku", label: "SKU" },
@@ -73,12 +30,12 @@ const ProductsTable = () => {
         { id: "modified_date", label: "Modified Date" },
     ];
     const [url, setUrl] = useState(base_url);
-    // let { data, pagination, loading, statistics } = useFetchData(url);
+    // let { data, pagination, loading, statistics, refetch } = useFetchData(url);
     let { data: locations } = useFetchDepot();
     const [tableData, setTableData] = useState([]);
     const [search, setSearch] = useState("");
     const [post_status, setPostStatus] = useState({ post_status: "all" });
-    const [filterObject, setFilterObject] = useState(filters);
+    const [filterObject, setFilterObject] = useState([]);
     const [sort, setSort] = useState({ orderby: 'modified_date', order: 'desc' });
     const [refetchFlag, setRefetchFlag] = useState(false); // filter flag
     const [page, setPage] = useState(1);
@@ -87,7 +44,44 @@ const ProductsTable = () => {
     const [formModal, setFormModal] = useState(false)
     const [editProduct, setEditProduct] = useState(null)
     const [imageUploadModal, setImageUploadModal] = useState(false);
-
+    let filters = [];
+    useEffect(() => {
+        filters = [
+            {
+                title: "Location", name: 'location', default: [], options: locations.map(i => ({ id: i.title, label: i.title })), value: []
+            },
+            {
+                title: "Condition", name: 'condition', default: [], options: [
+                    { id: 'New', label: "New" },
+                    { id: 'Used', label: "Used" },
+                    { id: 'Refurbished', label: "Refurbished" },
+                ], value: []
+            },
+            {
+                title: "Size", name: 'length_width', default: [], options: [
+                    { id: "10'", label: "10'" },
+                    { id: "20'", label: "20'" },
+                    { id: "40'", label: "40'" },
+                    { id: "45'", label: "45'" },
+                    { id: "53'", label: "53'" },
+                ], value: []
+            },
+            {
+                title: "Height", name: 'height', default: [], options: [
+                    { id: `8' 6" Standard`, label: `8' 6" Standard` },
+                    { id: `9' 6" High Cube (HC)`, label: `9' 6" High Cube (HC)` },
+                ], value: []
+            },
+            {
+                title: "Selection Type", name: 'selectionoptions', default: [], options: [
+                    { id: 'First off the Stack (FO)', label: "First off the Stack (FO)" },
+                    { id: 'Exclusive Pool (EP)', label: "Exclusive Pool (EP)" },
+                    { id: 'You Pick (UP)', label: "You Pick (UP)" },
+                ], value: []
+            },
+        ];
+        setFilterObject(filters);
+    }, [locations]);
 
     // table 
     const [data, setData] = useState([]);
@@ -98,18 +92,21 @@ const ProductsTable = () => {
     const [error, setError] = useState(null);
 
 
-    
+
 
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        setFetchLoading(true);
+
         const fetchProductsUrl = () => {
             let params = generateUrlParams(getAllParams());
             return base_url + '?' + params;
         }
         const fetchProducts = async () => {
-            console.log("fetch url",fetchProductsUrl());
+            console.log("fetch url", fetchProductsUrl());
             try {
-                setFetchLoading(true);
-                axios.get(fetchProductsUrl())
+                axios.get(fetchProductsUrl(), { signal })
                     .then(response => {
                         console.log(response.data)
                         setData(response.data.products);
@@ -120,14 +117,22 @@ const ProductsTable = () => {
                     })
                     .catch(error => {
                         console.log(error)
-                        setError(error);
-                        setFetchLoading(false);
+                        if (error.code !== "ERR_CANCELED") {
+                            setError(error);
+                            setFetchLoading(false);
+                        }
                     });
             } catch (err) {
                 setError(err);
             }
         };
+
         fetchProducts();
+
+        return () => {
+            controller.abort();
+        };
+        // refetch();
     }, [refetchFlag]);
 
     // set data to a local state
@@ -147,8 +152,8 @@ const ProductsTable = () => {
     const handleRefetchDataAfterProductCreate = () => {
         setFormModal(false);
         setPage(1);
-        setSort({orderby: 'modified_date', order: 'desc'});
-        setPostStatus({post_status:'all'})
+        setSort({ orderby: 'modified_date', order: 'desc' });
+        setPostStatus({ post_status: 'all' })
         setRefetchFlag(!refetchFlag);
     }
 
@@ -186,16 +191,12 @@ const ProductsTable = () => {
         setRefetchFlag(!refetchFlag);
     }
 
-    const findIndexByName = (array, name) => {
-        return array.findIndex(item => item.name === name);
-    };
-
     const generateUrlParams = (obj) => {
         let result = "";
         for (const key in obj) {
             if (Array.isArray(obj[key])) { // Check if key is an own property
                 obj[key].forEach((item, index) => {
-                    result += `&${key}[]=${item}`;
+                    result += `&${key}[]=${encodeURIComponent(item)}`;  
                 });
             } else {
                 result += '&' + new URLSearchParams({ [key]: obj[key] }).toString();
@@ -223,13 +224,23 @@ const ProductsTable = () => {
         if (search != "") {
             temp['search'] = search;
         }
+        console.log("getAllParams", temp);
         return temp;
     }
 
 
+
+    const findIndexByName = (array, name) => {
+        return array.findIndex(item => item.name === name);
+    };
+
+
     const handleFilterChange = (e) => {
+        console.log(`filter`, e.value);
         let temp = filterObject;
         let index = findIndexByName(temp, e.name)
+        console.log('index', index);
+        console.log("temp", temp);
         temp[index]['value'] = e.value;
         setPage(1);
         setFilterObject(temp);
@@ -246,7 +257,7 @@ const ProductsTable = () => {
 
     const changePage = (to_page) => {
         console.log("triggered Change Page:", to_page)
-        setPage((prev)=>to_page);
+        setPage((prev) => to_page);
         setRefetchFlag(!refetchFlag);
     }
 
@@ -329,7 +340,7 @@ const ProductsTable = () => {
                 </div>
                 {/* search and filter filter badges */}
                 <div className={`${searchfilter} py-[1px] px-[3px] flex flex-wrap`}>
-                    {/* {filters && filters.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))} */}
+                    {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
                 </div>
                 <Table data={tableData} columns={columns} onEditProductClick={handleEditProductClick} onEditImageClick={handleEditImageClick} fetchingData={loading} twClass="py-1"></Table>
             </div>

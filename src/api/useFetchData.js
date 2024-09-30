@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import useDebounce from '../hooks/useDebounce'; // Adjust the path as needed
+// import useDebounce from '../hooks/useDebounce'; // Adjust the path as needed
 
 const useFetchData = (url) => {
   const [data, setData] = useState([]);
@@ -9,16 +9,18 @@ const useFetchData = (url) => {
   const [statistics, setStatistic] = useState([]);
   const [loading, setFetchLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [triggerRefetch, setTriggerRefetch] = useState(false);
 
-  const debouncedQuery = useDebounce(url, 300);
+  // const debouncedQuery = useDebounce(url, 300);
 
   useEffect(() => {
-    if (!debouncedQuery) return; // Skip if debouncedQuery is empty
-
+    const controller = new AbortController();
+    const signal = controller.signal;
+    // if (!debouncedQuery) return; // Skip if debouncedQuery is empty
     const fetchData = async () => {
       try {
         setFetchLoading(true);
-        axios.get(url)
+        axios.get(url,{signal})
           .then(response => {
             // console.log(response.data)
             setData(response.data.products);
@@ -28,7 +30,7 @@ const useFetchData = (url) => {
             setFetchLoading(false);
           })
           .catch(error => {
-            console.log(error)
+            // console.log(error)
             setError(error);
             setFetchLoading(false);
           });
@@ -38,10 +40,16 @@ const useFetchData = (url) => {
     };
 
     fetchData();
-  }, [debouncedQuery]);
-  // }, [url]);
 
-  return { data, count, pagination, loading, error, statistics };
+    return () => {
+        controller.abort();
+    };
+
+  }, [url,triggerRefetch]);
+
+  const refetch = () => setTriggerRefetch(prev => !prev);
+
+  return { data, count, pagination, loading, error, statistics, refetch };
 };
 
 export default useFetchData;

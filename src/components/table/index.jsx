@@ -29,12 +29,16 @@ const Table = ({ data, columns, twClass, onEditProductClick, onEditImageClick, f
                     </tr>
                 </thead>
                 <tbody className="relative min-h-[200px] overflow-hidden">
-                    {fetchingData && <div className="absolute top-0 left-0 w-full h-full text-white pl-3" style={{
+                    {fetchingData && <tr>
+                        <td>
+                        <div className="absolute top-0 left-0 w-full h-full text-white pl-3" style={{
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     }}>
                          <Icon icon="fluent:spinner-ios-16-filled" className={`absolute spin right-[5px] text-lg top-[5px]`} />
                         Loading...
-                    </div>}
+                    </div>
+                        </td>
+                    </tr> }
 
                     {data.map((drow, rowindex) => (<tr key={`tr-products-table-${rowindex}`} className="bg-white hover:bg-stone-100 border-b border-stone-200">
                         {columns.map((col, index) => {
