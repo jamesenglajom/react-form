@@ -14,7 +14,7 @@ import ImageUploader from '../../images_upload/ImageUploader';
 import axios from "axios";
 
 const ProductsTable = () => {
-    const base_url = 'https://onsitestorage.com/wp-json/wp_to_react/v1/products';
+    const base_url = process.env.REACT_APP_API_URL + '/products';
     const tabs = [
         { id: 'all', label: "All" },
         { id: 'publish', label: "Published" },

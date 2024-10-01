@@ -84,7 +84,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     // console.log("Form submitted:", formData);
     console.log("formatted data: ", formatData(formData));
     // Handle form submission
-    // createUpdateProduct(formatData(formData));
+    createUpdateProduct(formatData(formData));
   };
 
   const permalinkSlug = (title) => {
@@ -148,7 +148,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   }
 
   const createUpdateProduct = async (data) => {
-    let API_URL = "https://onsitestorage.com/wp-json/wp_to_react/v1/product";
+    let API_URL = process.env.REACT_APP_API_URL + "/product";
     if(data["id"]){
       API_URL = API_URL + "/" + data["id"];
     }
