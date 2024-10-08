@@ -233,7 +233,7 @@ function Tabs() {
                     <div className="w-full">
                         Report
                         <div className="w-full">
-                            <div className="table text-sm border">
+                            <div className="table text-sm border w-full">
                                 {
                                     syncReport.map((v, i) => <div className="table-row">
                                         <div className="table-cell py-3 px-2">
