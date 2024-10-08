@@ -11,6 +11,7 @@ import ProductsDetailsForm from "../../form/product_details";
 import tdName from "../products/td_name"
 import ProductTableTabs from '../tabs';
 import ImageUploader from '../../images_upload/ImageUploader';
+import ZohoSyncForm from "../../zoho/sync_form/index"
 import axios from "axios";
 
 const ProductsTable = () => {
@@ -41,9 +42,11 @@ const ProductsTable = () => {
     const [page, setPage] = useState(1);
     const [searchfilter, setSearchFilter] = useState("hidden");
     const [filtertabs, setFilterTabs] = useState("");
-    const [formModal, setFormModal] = useState(false)
+    const [formModal, setFormModal] = useState(false);
     const [editProduct, setEditProduct] = useState(null)
     const [imageUploadModal, setImageUploadModal] = useState(false);
+    const [zohoSyncModal, setZohoSyncModal] = useState(false);
+
     let filters = [];
     useEffect(() => {
         filters = [
@@ -196,7 +199,7 @@ const ProductsTable = () => {
         for (const key in obj) {
             if (Array.isArray(obj[key])) { // Check if key is an own property
                 obj[key].forEach((item, index) => {
-                    result += `&${key}[]=${encodeURIComponent(item)}`;  
+                    result += `&${key}[]=${encodeURIComponent(item)}`;
                 });
             } else {
                 result += '&' + new URLSearchParams({ [key]: obj[key] }).toString();
@@ -294,13 +297,20 @@ const ProductsTable = () => {
         setEditProduct(product);
         setImageUploadModal(true);
     }
+
+    const handleZohoSyncClick = () =>{
+        setZohoSyncModal(true);
+    }
+
+
     return (
         <>
             <div className="rounded-xl border border-stone-300 shadow-md pb-3">
                 {/* title & create button */}
                 <div className='p-[7px] flex items-center justify-between'>
                     <div className='text-lg font-bold'>Products</div>
-                    <div>
+                    <div className="flex items-center">
+                        <button onClick={handleZohoSyncClick} className="mr-2 px-3 py-1 text-xs font-bold bg-green-700 hover:bg-green-600 rounded text-white">Zoho Sync</button>
                         <button onClick={handleCreateProduct} className="px-3 py-1 text-xs font-bold bg-green-700 hover:bg-green-600 rounded text-white">Create</button>
                     </div>
                 </div>
@@ -349,6 +359,9 @@ const ProductsTable = () => {
             </Modal>
             <Modal isOpen={imageUploadModal} onChange={setImageUploadModal}>
                 <ImageUploader update={editProduct} onUpdate={handleTableImageUpdates}></ImageUploader>
+            </Modal>
+            <Modal isOpen={zohoSyncModal} onChange={setZohoSyncModal}>
+                <ZohoSyncForm />
             </Modal>
         </>
     );
