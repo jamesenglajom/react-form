@@ -39,7 +39,8 @@ const TableSortButton = ({ options, onChange, value, disabled }) => {
 
     return (
         <div className="relative">
-            <button onClick={handleOpenDropdown} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-md text-gray-600 mr-[5px]">
+            {/* <button onClick={handleOpenDropdown} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-md text-gray-600 mr-[5px]"> */}
+            <button onClick={handleOpenDropdown} className="table-sort-button">
                 <Icon icon="fluent:arrow-sort-16-filled" />
             </button>
             {isOpen && (<div ref={dropdownRef} className="generic-dropdown absolute top-[100%] bg-white border border-stone-300 right-0 rounded-md mt-[5px] z-[10]">
@@ -48,7 +49,7 @@ const TableSortButton = ({ options, onChange, value, disabled }) => {
                     {options.map(option => (
                         <div key={`table-sort-option-${option.id}`} className="flex gap-[10px] flex-0-0-auto whitespace-nowrap">
                             <input type="radio" disabled={disabled} className="inline-block cursor-pointer" checked={value.orderby === option.id} value={option.id} id={`table-sort-option-${option.id}`} name="sort-orderby-radio" onChange={()=> handleSelection({orderby:    option.id})}/>
-                            <label htmlFor={`table-sort-option-${option.id}`} className="text-sm inline-block overflow-ellipsis whitespace-nowrap text-sm text-stone-700 select-none cursor-pointer">
+                            <label htmlFor={`table-sort-option-${option.id}`} className="text-sm inline-block overflow-ellipsis whitespace-nowrap text-stone-700 select-none cursor-pointer">
                                 {option.label}
                             </label>
                         </div>
@@ -61,7 +62,7 @@ const TableSortButton = ({ options, onChange, value, disabled }) => {
                             <div key={`sort-order-radio-wrap-${order.id}`}>
                                 <label htmlFor={`sort-order-option-${order.id}`}>
                                     <input type="radio" className="hidden" id={`sort-order-option-${order.id}`} name="sort-order-radio" value={order.id} checked={value.order === order.id} onChange={()=> handleSelection({order:order.id})}/>
-                                    <button disabled={disabled || value.order === order.id} className={`flex items-center w-full text-sm px-3 rounded-md py-1 ${value.order === order.id ? 'bg-stone-300':'bg-white hover:bg-stone-100'} ${orders.length !== index +1 && 'mb-1'}`} onClick={()=> handleSelection({order:order.id})}>
+                                    <button disabled={disabled || value.order === order.id} className={`table-sort-order-button ${value.order === order.id ? 'active':''} ${orders.length !== index +1 && 'mb-1'}`} onClick={()=> handleSelection({order:order.id})}>
                                         <div className={`mr-3`}>
                                             <Icon icon={order.icon}></Icon>
                                         </div>

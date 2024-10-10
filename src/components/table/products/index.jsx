@@ -310,8 +310,8 @@ const ProductsTable = () => {
                 <div className='p-[7px] flex items-center justify-between'>
                     <div className='text-lg font-bold'>Products</div>
                     <div className="flex items-center">
-                        <button onClick={handleZohoSyncClick} className="mr-2 px-3 py-1 text-xs font-bold bg-green-700 hover:bg-green-600 rounded text-white">Zoho Sync</button>
-                        <button onClick={handleCreateProduct} className="px-3 py-1 text-xs font-bold bg-green-700 hover:bg-green-600 rounded text-white">Create</button>
+                        <button onClick={handleZohoSyncClick} className="table-action-button">Zoho Sync</button>
+                        <button onClick={handleCreateProduct} className="table-action-button">Create</button>
                     </div>
                 </div>
                 {/* search, filter, columns */}
@@ -322,7 +322,8 @@ const ProductsTable = () => {
                         {loading && <Icon icon="fluent:spinner-ios-16-filled" className={`absolute spin right-[5px] text-lg top-[5px]`} />}
                     </div>
                     <div className={`${searchfilter} min-w-[68px] flex items-center justify-end`} onClick={hideSearchFilter}>
-                        <button className="flex items-center border-[1px] border-gray-300 text-xs py-[6px] px-[8px] rounded-md text-gray-600">
+                        {/* <button className="flex items-center border-[1px] border-gray-300 text-xs py-[6px] px-[8px] rounded-md text-gray-600"> */}
+                        <button className="table-cancel-filter-button">
                             Cancel
                         </button>
                     </div>
@@ -332,7 +333,7 @@ const ProductsTable = () => {
                     <div className={`${filtertabs} min-w-[54px] relative`} onClick={showSearchFilter}>
                         {/* {loading==true &&  } */}
                         {loading && <Icon icon="fluent:spinner-ios-16-filled" className={`absolute spin left-[-23px] text-lg top-[5px]`} />}
-                        <button className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-md text-gray-600">
+                        <button className="table-filter-group-button">
                             <Icon icon="fluent:search-16-filled" />
                             <Icon icon="fluent:filter-16-filled" />
                         </button>
@@ -340,10 +341,10 @@ const ProductsTable = () => {
                     {/* sort and paginate buttons */}
                     <div className={`${''} min-w-[118px] flex items-center justify-end`}>
                         <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort} disabled={loading}></TableSortButton>
-                        <button disabled={pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} data-page={pagination.prev} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-l-md text-gray-600">
+                        <button disabled={pagination.prev ? false : true} onClick={() => changePage(pagination.prev)} data-page={pagination.prev} className="table-pagination-control table-pagination-control__left">
                             <Icon icon="fluent:chevron-left-16-filled" />
                         </button>
-                        <button disabled={pagination.next ? false : true} onClick={() => changePage(pagination.next)} data-page={pagination.next} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-r-md text-gray-600">
+                        <button disabled={pagination.next ? false : true} onClick={() => changePage(pagination.next)} data-page={pagination.next} className="table-pagination-control table-pagination-control__right">
                             <Icon icon="fluent:chevron-right-16-filled" />
                         </button>
                     </div>

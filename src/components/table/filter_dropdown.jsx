@@ -52,7 +52,7 @@ const TableFilterButton = ({ options, type, onChange, title, name, value }) => {
     return (
         <div className="relative">
             <div>
-                <button onClick={handleOpenDropdown} className={`select-none text-xs py-1 px-2 rounded-corner border rounded-md inline-block m-[1px] ${value.length > 0 ? 'border-stone-300 bg-stone-100': 'bg-stone-100 border-stone-200 border-dashed'}`}>{ title }<span className=" ml-1">{selectionText}</span></button>
+                <button onClick={handleOpenDropdown} className={`table-filter-tab-button ${value.length > 0 ? 'active': ''}`}>{ title }<span className=" ml-1">{selectionText}</span></button>
             </div>
             {/* dropdown */}
             {isOpen && options.length > 0 && (<div ref={dropdownRef} className="generic-dropdown absolute top-[100%] bg-white border border-stone-300 left-0 rounded-md mt-[5px] z-[10]">
@@ -61,13 +61,13 @@ const TableFilterButton = ({ options, type, onChange, title, name, value }) => {
                     {options.map(option => (
                         <div key={`table-filters-${name}-${option.id}`} className="flex gap-[10px] flex-0-0-auto whitespace-nowrap">
                             <input type="checkbox" className="inline-block cursor-pointer" id={`table-filter-${name}-${option.id}`} name={option.id} onChange={handleSelection} value={options.id} checked={value.includes(option.id)}/>
-                            <label htmlFor={`table-filter-${name}-${option.id}`} className="text-sm inline-block overflow-ellipsis whitespace-nowrap text-sm text-stone-700 select-none cursor-pointer">
+                            <label htmlFor={`table-filter-${name}-${option.id}`} className="text-sm inline-block overflow-ellipsis whitespace-nowrap text-stone-700 select-none cursor-pointer">
                                 {option.label}
                             </label>
                         </div>
                     ))}
                     <div>
-                        <button disabled={value.length > 0 ? false:true} className={`mt-3 text-xs ${value.length > 0 ? 'text-indigo-400 hover:text-indigo-500 cursor-pointer hover:underline':'text-stone-400'}`} onClick={clearSelection}>Clear</button>
+                        <button disabled={value.length > 0 ? false:true} className={`table-filter-tab-clear-button ${value.length > 0 ? 'active':''}`} onClick={clearSelection}>Clear</button>
                     </div>
                 </div>
             </div>)

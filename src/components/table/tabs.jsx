@@ -10,7 +10,7 @@ export default function productTableTabs({ tabs, stats, value, disabled, onChang
                 tabs.map(tab => (
                     <div key={`post-status-products-tab-${tab.id}`}>
                         <input className="hidden" type="radio" checked={tab.id===value.post_status} value={tab.id} id={`post-status-tab-${tab.id}`} name="post-status-tabs" onChange={handleChange} />
-                        <button onClick={handleChange} disabled={disabled || tab.id===value.post_status } value={tab.id} className={`${tab.id===value.post_status? 'bg-gray-300  font-semibold':'bg-white hover:bg-gray-200'} select-none text-xs py-1 px-3 rounded-full  inline-block m-[1px]`}>
+                        <button onClick={handleChange} disabled={disabled || tab.id===value.post_status } value={tab.id} className={`table-post-status-tab-button ${tab.id===value.post_status? 'active':''} select-none text-xs py-1 px-3 rounded-full  inline-block m-[1px]`}>
                             {tab.label + ' | ' + (stats?.[tab.id] ?? '0')}
                         </button>
                     </div>
