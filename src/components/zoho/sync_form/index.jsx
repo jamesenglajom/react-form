@@ -20,7 +20,8 @@ function Tabs() {
         'Grade',
         'Condition',
     ]; // Content for each tab
-    const locationOptions = ["Atlanta, GA",
+    const locationOptions = [
+        "Atlanta, GA",
         "Baltimore, MD",
         "Calgary, AB",
         "Charleston, SC",
@@ -247,7 +248,7 @@ function Tabs() {
                 }
             </div>
             <div className="p-3 w-full flex justify-between">
-                <button className={`px-3 py-1 text-xs font-bold  rounded text-white ${isSyncing ? "pointer-events-none bg-slate-300" : "pointer-events-auto bg-slate-900 hover:bg-slate-800"}`} onClick={handleStartSyncClick} disabled={isSyncing}>{isSyncing ? "Syncing..." : "Start Sync"}</button>
+                <button className={`product-zoho-sync-button ${isSyncing ? "insync" : ""}`} onClick={handleStartSyncClick} disabled={isSyncing}>{isSyncing ? "Syncing..." : "Start Sync"}</button>
             </div>
         </div>
     );

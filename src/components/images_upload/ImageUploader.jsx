@@ -169,7 +169,7 @@ const InputImages = ({ update, onUpdate }) => {
               <Icon icon="gg:spinner-two" className="animate-spin text-4xl" />
             </div>
           </div>
-          <button onClick={() => clickAddMainImage()} className={`border-[4px] border-dashed border-indigo-500 rounded-md w-[10em] h-[10em] text-indigo-500 ${processing ? "pointer-events-none" : ""}`}>
+          <button onClick={() => clickAddMainImage()} className={`product-main-image-upload-button ${processing ? "pointer-events-none" : ""}`}>
             +
           </button>
         </li>
@@ -207,7 +207,7 @@ const InputImages = ({ update, onUpdate }) => {
               <Icon icon="gg:spinner-two" className="animate-spin text-4xl" />
             </div>
           </div>
-          <button onClick={() => clickAddImages()} className={`border-[4px] border-dashed border-indigo-500 rounded-md w-[8em] h-[8em] text-indigo-500 ${processing ? "pointer-events-none" : ""}`}>
+          <button onClick={() => clickAddImages()} className={`product-gallery-image-upload-button ${processing ? "pointer-events-none" : ""}`}>
             +
           </button>
         </li>
@@ -229,7 +229,7 @@ const InputImages = ({ update, onUpdate }) => {
       </ul>
 
       <div className="mt-5">
-        <button className="bg-stone-800 text-white hover:bg-stone-700 px-3 py-1 rounded-sm" onClick={postSetGenericImageAttachments}>Set Generic Image Attachements</button>
+        <button className="product-set-generic-image-attachments-button" onClick={postSetGenericImageAttachments}>Set Generic Image Attachements</button>
       </div>
     </div>
   );
