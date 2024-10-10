@@ -362,7 +362,7 @@ const ProductsTable = () => {
                 <ImageUploader update={editProduct} onUpdate={handleTableImageUpdates}></ImageUploader>
             </Modal>
             <Modal isOpen={zohoSyncModal} onChange={setZohoSyncModal}>
-                <ZohoSyncForm />
+                <ZohoSyncForm locations={locations}/>
             </Modal>
         </>
     );

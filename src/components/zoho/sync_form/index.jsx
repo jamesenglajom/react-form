@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import ProgressBar from "../../progress_bar/index"
 import axios from "axios";
 
-function Tabs() {
+function ZohoSyncForm({locations}) {
     // const [activeTab, setActiveTab] = useState(0); // Manages active tab index
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncLength, setSyncLength] = useState(0);
@@ -11,7 +11,7 @@ function Tabs() {
     const [syncData, setSyncData] = useState([]);
     const [syncReport, setSyncReport] = useState([]);
     const [showReport, setShowReport] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState("Atlanta, GA");
+    const [selectedLocation, setSelectedLocation] = useState("Abilene, TX");
     const [selectedGrade, setSelectedGrade] = useState("AS IS");
     const [selectedCondition, setSelectedCondition] = useState("New");
     const tabs = ['Location', 'Grade', 'Condition']; // Tab titles
@@ -20,62 +20,8 @@ function Tabs() {
         'Grade',
         'Condition',
     ]; // Content for each tab
-    const locationOptions = [
-        "Atlanta, GA",
-        "Baltimore, MD",
-        "Calgary, AB",
-        "Charleston, SC",
-        "Charlotte, NC",
-        "Chicago, IL",
-        "Cincinnati, OH",
-        "Cleveland, OH",
-        "Columbus, OH",
-        "Dallas, TX",
-        "Denver, CO",
-        "Detroit, MI",
-        "Edmonton, AB",
-        "El Paso, TX",
-        "Houston, TX",
-        "Indianapolis, IN",
-        "Jacksonville, FL",
-        "Kansas City, KS",
-        "Laredo, TX",
-        "Los Angeles / Long Beach, CA",
-        "Louisville, KY",
-        "Memphis, TN",
-        "Miami, FL",
-        "Minneapolis, MN",
-        "Mobile, AL",
-        "Montreal, QB",
-        "Nashville, TN",
-        "New Orleans, LA",
-        "New York, NY / Newark, NJ",
-        "Norfolk, VA",
-        "Omaha, NE",
-        "Phoenix, AZ",
-        "Portland, OR",
-        "Raleigh, NC",
-        "Salt Lake City",
-        "San Antonio, TX",
-        "San Francisco / Oakland, CA",
-        "Savannah, GA",
-        "Seattle, WA",
-        "St. Louis, MO",
-        "Tacoma, WA",
-        "Tampa, FL",
-        "Toronto, ON",
-        "Vancouver, BC / Delta, BC",
-        "Wilmington, NC",
-        "Winnipeg, MB",
-        "Worcester / Boston, MA",
-        "Halifax / Dartmouth, NS",
-        "Regina, SK",
-        "Saskatoon, SK",
-        "Pittsburgh, PA",
-        "Greer, SC",
-        "Austin, TX",
-        "Las Vegas, NV",
-        "Orlando, FL"];
+    const locationOptions = locations.map(i=> i.title);
+    
 
     const gradeOptions = [
         "AS IS", "IICL", "Cargo Worthy (CW)", "Wind and Water Tight (WWT)"
@@ -254,4 +200,4 @@ function Tabs() {
     );
 }
 
-export default Tabs;
+export default ZohoSyncForm;
