@@ -3,12 +3,7 @@ import axios from "axios";
 const CategoryField = ({label, value, onChange})=>{
     const [categoryList, setCategoryList] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState(value);
-
-    useEffect(()=>{
-        let initialValue = categoryList.filter(i=> value.includes(i.name)).map(i=> i.id);
-        setSelectedCategories(initialValue);
-    },[categoryList]);
-
+    
     // fecth category list onload
     useEffect(()=>{
     axios.get("https://onsitestorage.com/wp-json/wp_to_react/v1/product-categories").then(res => {
@@ -18,15 +13,29 @@ const CategoryField = ({label, value, onChange})=>{
     },[]);
 
     useEffect(()=>{
+        console.log("category_field_value", value);
+    },[value])
+    
+    useEffect(()=>{
+        if(categoryList.length > 0){
+            const hasNonNumber = value.some(value => typeof value !== 'number' || isNaN(value));
+            if(hasNonNumber){
+                let initialValue = categoryList.filter(i=> value.includes(i.name)).map(i=> i.id);
+                setSelectedCategories(initialValue);
+            }
+        }
+    },[categoryList]);
+
+    useEffect(()=>{
         onChange({target:{name:"categories", type:"product_category", value: selectedCategories}})
     },[selectedCategories])
 
     const handleChange = (event) => {
-        const { value, checked } = event.target;
+        const { value:val, checked } = event.target;
         if (checked) {
-            setSelectedCategories((prev) => [...prev, parseInt(value)]);
+            setSelectedCategories((prev) => [...prev, parseInt(val)]);
         } else {
-            setSelectedCategories((prev) => prev.filter((id) => parseInt(id) !== parseInt(value)));
+            setSelectedCategories((prev) => prev.filter((id) => parseInt(id) !== parseInt(val)));
         }
     }
 

@@ -150,6 +150,7 @@ const ProductsTable = () => {
                 parseInt(i.id) === parseInt(data.id) ? { ...i, ...data } : i
             )
         );
+        setFormModal(false);
     }
 
     const handleRefetchDataAfterProductCreate = () => {

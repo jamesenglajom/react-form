@@ -17,11 +17,11 @@ const Table = ({ data, columns, twClass, onEditProductClick, onEditImageClick, f
                         {columns.map((column, index) =>
                             <th key={column.name + '-' + index} className={`${column.th_style} text-xs py-2 text-stone-600 bg-stone-200`}>
                                 <div className="flex items-center">
-                                    {index == 0 && (
+                                    {/* {index == 0 && (
                                         <div className="pr-2">
                                             <input type="checkbox" />
                                         </div>
-                                    )}
+                                    )} */}
                                     <div className={`${column.th_align} w-full`}>{column.label}</div>
                                 </div>
                             </th>

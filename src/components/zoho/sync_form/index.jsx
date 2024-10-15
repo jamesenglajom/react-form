@@ -47,9 +47,10 @@ function ZohoSyncForm({locations}) {
     }, [syncIndex]);
 
     const handleStartSyncClick = () => {
+        setShowReport(false);
+        setSyncReport(prev => []);
         setIsSyncing(true);
         setSyncLength(0);
-        setSyncIndex(0);
         setSyncProgress(0);
         setSyncData([]);
         const data = { location: selectedLocation, grade: selectedGrade, condition: selectedCondition, }
@@ -82,15 +83,13 @@ function ZohoSyncForm({locations}) {
     }
 
     const sync_products_to_zoho = (data) => {
-        setIsSyncing(true);
         setSyncLength(data.length);
-        setSyncIndex(0);
-        setSyncProgress(0);
         setSyncData(data);
         zoho_sync(data);
     }
 
     const zoho_sync = (data) => {
+        console.log(`${data.length} > ${syncIndex}`,data.length > syncIndex)
         if (data.length > syncIndex) {
             const product_ids = { product_ids: data[syncIndex], progress_index: syncIndex, progress_length: data.length };
             try {
@@ -100,12 +99,14 @@ function ZohoSyncForm({locations}) {
                     },
                 }).then(res => {
                     const { progress, report } = res.data;
-                    setSyncIndex(prev => prev + 1);
                     setSyncProgress(prev => progress);
                     setSyncReport(prev => [...prev, ...report]);
                     if (progress === 100) {
                         setShowReport(true);
-                        setIsSyncing(false);
+                        setIsSyncing(false);    
+                        setSyncIndex(prev => 0);
+                    }else{
+                        setSyncIndex(prev => prev + 1);
                     }
                 })
             } catch (error) {
@@ -182,7 +183,7 @@ function ZohoSyncForm({locations}) {
                         <div className="w-full">
                             <div className="table text-sm border w-full">
                                 {
-                                    syncReport.map((v, i) => <div className="table-row">
+                                    syncReport.map((v, i) => <div key={`report-${v.response_data.code}-${v.wc_product_id}`} className="table-row">
                                         <div className="table-cell py-3 px-2">
                                             <span className={v.response_data.code === 0 ? 'text-green-500' : 'text-red-500'}>{v.response_data.message} <span className="text-stone-500">{v.wc_product_id}</span></span>
                                         </div>
