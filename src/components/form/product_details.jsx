@@ -17,6 +17,8 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     {}
   );
 
+  const [disableSubmit,setDisableSubmit] = useState(false);
+
   useEffect(()=>{
     if(!update){
       setFormData({
@@ -148,6 +150,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   }
 
   const createUpdateProduct = async (data) => {
+    setDisableSubmit(true);
     let API_URL = process.env.REACT_APP_API_URL + "/product";
     if(data["id"]){
       API_URL = API_URL + "/" + data["id"];
@@ -159,6 +162,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
         }
       }).then((response) => {
         // Handle the response
+        setDisableSubmit(false);
         console.log("update details response:", response.data);
         if (update) {
           let populated_data = populateData(response.data.product);
@@ -171,6 +175,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
       }).catch((error) => {
         // Handle the error
         // console.error("update details error:", error);
+        setDisableSubmit(false);
         if(error.response.data.code == 400){
           setRequestError(error.response.data);
         }
@@ -338,8 +343,10 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
 
             <button
               type="submit"
-              className="mt-5 ml-3 px-3 py-1 upper bg-red-500">
-              Submit
+              className="mt-5 ml-3 px-3 py-1 upper bg-red-500" disabled={disableSubmit}>
+              {
+                disableSubmit ? "Processing...": "Submit" 
+              }
             </button>
           </form>
         </div>
