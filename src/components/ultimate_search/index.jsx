@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-function UltimateSearch({onSearch}) {
+function UltimateSearch({ onSearch }) {
+    const [search, setSearch ] = useState("");
+    
+    const handleInput = (e) => {
+        const {value} = e.target;
+        setSearch(value);
+    }
+
     return (
-        <div>
-            <div className="w-full bg-red-500 flex justify-center items-center p-2">
-                <div className="w-[90%] bg-green-500">
-                    <input type="search" className="w-full py-1 px-3" placeholder="Search for Containers..." />
-                </div>
-            </div>
+        <div className="w-full p-1 flex">
+            <input type="search" className="w-full py-1 px-3" placeholder="Search for Containers..." value={search} onInput={handleInput}/>
+            <button className="py-1 px-3 text-white bg-stone-700">Search</button>
         </div>
     )
 }
