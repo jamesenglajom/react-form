@@ -9,27 +9,33 @@ import Modal from "../components/modal";
 import ImageUploader from '../components/images_upload/ImageUploader';
 import axios from "axios";
 import Swal from 'sweetalert2';
+import ZohoSyncForm from "../components/zoho/sync_form";
 import { toast, ToastContainer } from 'react-toastify';
 
 export function Home() {
     const API_URL = process.env.REACT_APP_API_URL;
     const base_url = API_URL + '/products';
-    const { data: products, loading, error, pagination, refetch } = useFetchContainers(base_url);
+    const [URL, setURL] = useState(base_url);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const { data: products, loading, error, pagination, refetch } = useFetchContainers(URL);
     let { data: locations } = useFetchDepot();
-    const [displayResults, setDisplayResults] = useState(false)
+    const [displayResults, setDisplayResults] = useState(false);
     const [listData, setListData] = useState(products);
     const [filterObject, setFilterObject] = useState([]);
+    const [zohoBulkUpdate, setZohoBulkSyncUpdate] = useState([]);
     const [actionProcess, setActionProcess] = useState([]); // {id, action} > zoho_sync, set_generic_images
+    const [refetchFlag, setRefetchFlag] = useState(false);
     // product editItem 
     const [editProduct, setEditProduct] = useState(null)
     // Modals
-    // const [formModal,setFormModal] = useState(false);
+    const [zohoSyncModal, setZohoSyncModal] = useState(false);
     const [imgUploadModal, setImgUploadModal] = useState(false);
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         console.log("useEffectlistData", listData);
-        setDisplayResults(true);
-    },[listData]);
+        // setDisplayResults(true);
+    }, [listData]);
 
     useEffect(() => {
         console.log("products from useEffect", products);
@@ -76,7 +82,58 @@ export function Home() {
     }, [locations]);
 
 
+    useEffect(() => {
+        const generated_url = generateURL(generateUrlParams(getAllParams()))
+        console.log("check url params -- from refetchFlag useEffect", generated_url);
+        let triggerKeys = ["search", "location", "condition", "size", "height", "selectionoptions"];
+        let match = triggerKeys.some(key => generated_url.includes(key));
+        if (match) {
+            setURL(generated_url);
+            setDisplayResults(true);
+        } else {
+            setDisplayResults(false);
+        }
+    }, [refetchFlag]);
 
+    const arrayToObject = (arr) => {
+        return arr.reduce((accumulator, item) => {
+            accumulator[item.name] = item.value;
+            return accumulator;
+        }, {});
+    };
+
+    const getAllParams = () => {
+        let temp = filterObject;
+        // remove properties with no values
+        temp = temp.filter(i => i.value.length > 0);
+        temp = arrayToObject(temp);
+        temp['page'] = page;
+        // temp = { ...temp, ...sort };
+        // temp = { ...temp, ...post_status };
+        if (search != "") {
+            temp['search'] = search;
+        }
+        console.log("getAllParams", temp);
+        return temp;
+    }
+
+    const generateUrlParams = (obj) => {
+        let result = "";
+        for (const key in obj) {
+            if (Array.isArray(obj[key])) { // Check if key is an own property
+                obj[key].forEach((item, index) => {
+                    result += `&${key}[]=${encodeURIComponent(item)}`;
+                });
+            } else {
+                result += '&' + new URLSearchParams({ [key]: obj[key] }).toString();
+            }
+        }
+        return result;
+    }
+
+    const generateURL = (params) => {
+        return base_url + "?" + params;
+    }
 
     const findIndexByName = (array, name) => {
         return array.findIndex(item => item.name === name);
@@ -90,10 +147,15 @@ export function Home() {
         // console.log("temp", temp);
         temp[index]['value'] = e.value;
         setFilterObject(prev => temp);
+        setPage(prev => 1);
+        setRefetchFlag(prev => !prev);
     }
 
-    const handleOnSearch = (search) => {
-        console.log("search", search);
+    const handleOnSearch = (v) => {
+        console.log("handleOnSearch", v)
+        setSearch(prev => v);
+        setPage(prev => 1);
+        setRefetchFlag(prev => !prev);
     }
 
     const handleImgUploadClick = (product) => {
@@ -129,6 +191,18 @@ export function Home() {
                 parseInt(i.id) === parseInt(data.id) ? { ...data } : i
             )
         );
+    }
+
+    useEffect(()=>{
+        console.log("zohoBulkUpdate",zohoBulkUpdate);
+        if(zohoBulkUpdate.length>0){
+            // update listData
+            // zohoBulkUpdate.
+        }
+    },[zohoBulkUpdate])
+
+    const handleBulkZohoSyncUpdate = (data) => {
+        setZohoBulkSyncUpdate(data);
     }
 
     const handleSetGenericImgClick = (product) => {
@@ -225,101 +299,126 @@ export function Home() {
             <Modal isOpen={imgUploadModal} onChange={setImgUploadModal}>
                 <ImageUploader update={editProduct} onUpdate={handleTableImageUpdates}></ImageUploader>
             </Modal>
-            <div className="w-full bg-white">
-                <div className="container mx-auto">
-                    <div className="w-full px-1 py-4 flex justify-end items-center gap-1">
-                        <button className="rounded text-white bg-red-600 py-1 px-3 border-[2px] border-red-600">Zoho Batch Sync</button>
-                        <button className="rounded border-[2px] border-red-600 text-red-600 py-1 px-3">Add Product</button>
+            <Modal isOpen={zohoSyncModal} onChange={setZohoSyncModal}>
+                <ZohoSyncForm locations={locations} onSyncUpdate={handleBulkZohoSyncUpdate} />
+            </Modal>
+            <div className="sticky top-0 bg-white shadow-lg z-[2000]">
+                <div className="w-full bg-white">
+                    <div className="container mx-auto">
+                        <div className="w-full px-1 py-4 flex justify-end items-center gap-1">
+                            <button className="react-primary-button" onClick={() => setZohoSyncModal(true)}>Zoho Batch Sync</button>
+                            <button className="react-primary-outline-button bg-red-100">Add Product</button>
+                        </div>
+                    </div>
+                </div>
+                <div className="w-full bg-red-500">
+                    <div className="container mx-auto ">
+                        <UltimateSearch onSearch={handleOnSearch}></UltimateSearch>
+                    </div>
+                </div>
+                {/* filters */}
+                <div className="w-full bg-white">
+                    <div className="container mx-auto">
+                        <div className="w-full flex justify-between items-center">
+                            <div className="w-full px-1 py-4 flex justify-start items-center gap-1">
+                                {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
+                            </div>
+                            <div className="text-stone-500 font-semibold whitespace-nowrap">
+                                { displayResults && !loading && `${pagination.total_count} records displayed`}.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="w-full bg-red-500">
-                <div className="container mx-auto">
-                    <UltimateSearch onsearch={handleOnSearch}></UltimateSearch>
-                </div>
-            </div>
-            {/* filters */}
-            <div className="w-ful">
-                <div className="container mx-auto">
-                    <div className="w-full px-1 py-4 flex justify-center items-center gap-1">
-                        {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
+            <>
+                {
+                    displayResults && loading && <div className="w-full">
+                        <div className="container mx-auto flex justify-center items-center py-10">
+                            <div className="font-bold text-2xl text-stone-400">
+                                Loading Containers...
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            {
-                loading ? <div>Loading Containers</div> :
-                    <div className="w-full p-[20px]  text-[0.8em]">
+                }
+                {
+                    displayResults && !loading && listData && listData.length === 0 && <div className="w-full">
+                        <div className="container mx-auto flex justify-center items-center py-10">
+                            <div className="font-bold text-2xl text-stone-400">
+                                No results to display
+                            </div>
+                        </div>
+                    </div>
+                }
+                {
+                    displayResults && !loading && listData && listData.length > 0 && <div className="w-full p-[20px]  text-[0.8em]">
                         {
-                            displayResults && <>
-                                {
-                                    listData && listData.map((product) => (
-                                        <div key={product?.id} className="w-full flex items-center py-2 px-1 mt-2 rounded-lg border border-stone-300">
-                                            <div className="w-[60px] h-[60px]">
-                                                {
-                                                    product?.image && <img src={product?.image} alt="" className="object-contain w-[60px] h-[60px]" />
-                                                }
-                                            </div>
-                                            <div className="w-[calc(100%-570px)] pl-[20px]">
-                                                <div>
-                                                    {product?.name}
-                                                </div>
-                                                <div>
-                                                    <span className="font-semibold">SKU: </span>{product?.sku}
-                                                </div>
-                                            </div>
-                                            <div className="w-[100px]">
-                                                <div className="relative w-full h-full">
-                                                    <div className="text-[0.8em] text-center">Stocks</div>
-                                                    <div className={`font-bold text-center ${product?.stocks ? "text-stone-500" : "text-red-500"}`}>{product?.stocks || 0}</div>
-                                                </div>
-                                            </div>
-                                            <div className="w-[100px] text-[1.5em] text-right font-semibold text-stone-500 p-1">
-                                                ${product?.price}
-                                            </div>
-                                            <div className="w-[200px]">
-                                                <div className="relative w-full h-full">
-                                                    <div className="text-[0.8em] text-center">Zoho Sync</div>
-                                                    <div className={`font-bold text-center ${product?.cf_zoho_link_id ? "text-green-500" : "text-red-500"}`}>{product?.cf_zoho_link_id ? "YES" : "NO"}</div>
-                                                    <div className="text-center text-[0.8em]">
-                                                        {product?.cf_zoho_sync_date ? product?.cf_zoho_sync_date : "--/--/-- --:--:--"}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="w-[50px]">
-                                                <div className="text-center">
-                                                    <button onClick={() => handleZohoSyncClick(product)} data-tooltip-id="zoho-sync-tooltip" className={`rounded text-center bg-red-600 text-white p-1 text-2xl ${actionProcess.filter(i => i.id === product.id && i.action === "zoho_single_sync").length > 0 ? "pointer-events-none" : ""}`}>
-                                                        {
-                                                            actionProcess.filter(i => i.id === product.id && i.action === "zoho_single_sync").length > 0 ? <Icon icon="gg:spinner-two" className="animate-spin" /> : <Icon icon="ic:round-sync" />
-                                                        }
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div className="flex p-1 gap-1 w-[120px] justify-center">
-                                                <div className="text-center">
-                                                    <button data-tooltip-id="edit-product-tooltip" className="rounded text-center bg-red-600 text-white p-1 text-2xl">
-                                                        <Icon icon="ic:baseline-edit" />
-                                                    </button>
-                                                </div>
-                                                <div className="text-center">
-                                                    <button onClick={() => handleImgUploadClick(product)} data-tooltip-id="upload-images-tooltip" className="rounded text-center bg-red-600 text-white p-1 text-2xl">
-                                                        <Icon icon="ic:baseline-image" />
-                                                    </button>
-                                                </div>
-                                                <div className="text-center">
-                                                    <button onClick={() => handleSetGenericImgClick(product)} data-tooltip-id="generic-images-tooltip" className={`rounded text-center bg-red-600 text-white p-1 text-2xl ${actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? "pointer-events-none" : ""}`}>
-                                                        {
-                                                            actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? <Icon icon="gg:spinner-two" className="animate-spin" /> : <Icon icon="ic:baseline-image-search" />
-                                                        }
-                                                    </button>
-                                                </div>
+                            listData.map((product) => (
+                                <div key={product?.id} className="w-full flex items-center py-2 px-1 mt-2 rounded-lg border border-stone-300">
+                                    <div className="w-[60px] h-[60px]">
+                                        {
+                                            product?.image && <img src={product?.image} alt="" className="object-contain w-[60px] h-[60px]" />
+                                        }
+                                    </div>
+                                    <div className="w-[calc(100%-570px)] pl-[20px]">
+                                        <div>
+                                            {product?.name}
+                                        </div>
+                                        <div>
+                                            <span className="font-semibold">SKU: </span>{product?.sku}
+                                        </div>
+                                    </div>
+                                    <div className="w-[100px]">
+                                        <div className="relative w-full h-full">
+                                            <div className="text-[0.8em] text-center">Stocks</div>
+                                            <div className={`text-[1.2em] font-bold text-center ${product?.stocks ? "text-stone-500" : "text-red-500"}`}>{product?.stocks || 0}</div>
+                                        </div>
+                                    </div>
+                                    <div className="w-[100px] text-[1.5em] text-right font-semibold text-stone-500 p-1">
+                                        ${product?.price}
+                                    </div>
+                                    <div className="w-[200px]">
+                                        <div className="relative w-full h-full">
+                                            <div className="text-[0.8em] text-center">Zoho Sync</div>
+                                            <div className={`font-bold text-center ${product?.cf_zoho_link_id ? "text-green-500" : "text-red-500"}`}>{product?.cf_zoho_link_id ? "YES" : "NO"}</div>
+                                            <div className="text-center text-[0.8em]">
+                                                {product?.cf_zoho_sync_date ? product?.cf_zoho_sync_date : "--/--/-- --:--:--"}
                                             </div>
                                         </div>
-                                    ))
-                                }
-                            </>
+                                    </div>
+                                    <div className="w-[50px]">
+                                        <div className="text-center">
+                                            <button onClick={() => handleZohoSyncClick(product)} data-tooltip-id="zoho-sync-tooltip" className={`action-icon-button ${actionProcess.filter(i => i.id === product.id && i.action === "zoho_single_sync").length > 0 ? "is_busy" : ""}`}>
+                                                {
+                                                    actionProcess.filter(i => i.id === product.id && i.action === "zoho_single_sync").length > 0 ? <Icon icon="gg:spinner-two" className="animate-spin" /> : <Icon icon="ic:round-sync" />
+                                                }
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="flex p-1 gap-1 w-[120px] justify-center">
+                                        <div className="text-center">
+                                            <button data-tooltip-id="edit-product-tooltip" className="action-icon-button">
+                                                <Icon icon="ic:baseline-edit" />
+                                            </button>
+                                        </div>
+                                        <div className="text-center">
+                                            <button onClick={() => handleImgUploadClick(product)} data-tooltip-id="upload-images-tooltip" className="action-icon-button">
+                                                <Icon icon="ic:baseline-image" />
+                                            </button>
+                                        </div>
+                                        <div className="text-center">
+                                            <button onClick={() => handleSetGenericImgClick(product)} data-tooltip-id="generic-images-tooltip" className={`action-icon-button bg-red-700 ${actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? "is_busy" : ""}`}>
+                                                {
+                                                    actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? <Icon icon="gg:spinner-two" className="animate-spin" /> : <Icon icon="ic:baseline-image-search" />
+                                                }
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
                         }
                     </div>
-            }
+                }
+            </>
         </div>
     )
 }

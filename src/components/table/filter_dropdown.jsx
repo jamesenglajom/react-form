@@ -1,20 +1,20 @@
 // TableFilterButton.jsx
 import React from "react";
 import PropTypes from "prop-types";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 // prop type not yet implemented
 // options: array, type: string
 const TableFilterButton = ({ options, type, onChange, title, name, value }) => {
     // const [value, setSelection] = useState([]);
     const [selectionText, setSelectionText] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [selections, setSelections] = useState(options);
+    const [selections, setSelections] = useState([]);
     const [filterValue, setFilterValue] = useState(value);
     const dropdownRef = useRef(null);
-
+    const options_memo = useMemo(() => options);
     useEffect(()=>{
-        setSelections(options);
-    }, options);
+        setSelections(options_memo);
+    }, [options]);
     // open dropdown
     const handleOpenDropdown = () => {
         setIsOpen(true);
@@ -49,7 +49,6 @@ const TableFilterButton = ({ options, type, onChange, title, name, value }) => {
     }
     // handle text on seletion
     useEffect(() => {
-            console.log("Selections",selections )
             let temp = selections.filter(i=> filterValue.includes(i.id))
             setSelectionText(filterValue.length == 0 ? '':` is ${temp.map(item => item.label).toString()}`);
 

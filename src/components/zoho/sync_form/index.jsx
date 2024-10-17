@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import ProgressBar from "../../progress_bar/index"
 import axios from "axios";
 
-function ZohoSyncForm({locations}) {
+function ZohoSyncForm({locations, onSyncUpdate}) {
     // const [activeTab, setActiveTab] = useState(0); // Manages active tab index
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncLength, setSyncLength] = useState(0);
@@ -101,8 +101,10 @@ function ZohoSyncForm({locations}) {
                     const { progress, report } = res.data;
                     setSyncProgress(prev => progress);
                     setSyncReport(prev => [...prev, ...report]);
+                    
                     if (progress === 100) {
                         setShowReport(true);
+                        onSyncUpdate(syncReport);
                         setIsSyncing(false);    
                         setSyncIndex(prev => 0);
                     }else{
@@ -195,7 +197,7 @@ function ZohoSyncForm({locations}) {
                 }
             </div>
             <div className="p-3 w-full flex justify-between">
-                <button className={`product-zoho-sync-button ${isSyncing ? "insync" : ""}`} onClick={handleStartSyncClick} disabled={isSyncing}>{isSyncing ? "Syncing..." : "Start Sync"}</button>
+                <button className={`react-primary-button ${isSyncing ? "disabled" : ""}`} onClick={handleStartSyncClick} disabled={isSyncing}>{isSyncing ? "Syncing..." : "Start Sync"}</button>
             </div>
         </div>
     );

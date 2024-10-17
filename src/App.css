@@ -393,3 +393,59 @@
   background:#cbd5e1 !important;
 }
 
+.action-icon-button{
+  border-radius: 0.25rem !important;
+  text-align: center !important;
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+  padding: 0.25rem !important;
+  font-size: 1.5rem !important;
+  line-height: 2rem !important;
+}
+
+.action-icon-button:hover{
+  background-color:#b91c1c !important;
+}
+
+.action-icon-button.is_busy, .action-icon-button.is_busy:hover{
+  pointer-events:none !important;
+  background-color:#991b1b !important;
+}
+
+.react-primary-button{
+  font-size:0.8em !important;
+  border-radius: 0.25rem !important;
+  color:white !important;
+  background-color: #dc2626 !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  border: 2px solid #dc2626 !important;
+  user-select:none;
+}
+.react-primary-button.disabled{
+  background-color: #f87171 !important;
+  border: 2px solid #f87171 !important;
+  pointer-events:none;
+}
+.react-primary-button:hover{
+  background-color: #b91c1c !important;
+  border: 2px solid #b91c1c !important;
+}
+
+.react-primary-outline-button{
+  font-size:0.8em !important;
+  border-radius: 0.25rem !important;
+  color:#dc2626 !important;
+  background-color: white !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  border: 2px solid #dc2626 !important;
+}
+
+.react-primary-outline-button:hover{
+  background-color: #fee2e2 !important;
+}
