@@ -88,6 +88,10 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
         zoho_sync(data);
     }
 
+    useEffect(()=>{
+        onSyncUpdate(syncReport);
+    },[syncReport]);
+
     const zoho_sync = (data) => {
         console.log(`${data.length} > ${syncIndex}`,data.length > syncIndex)
         if (data.length > syncIndex) {
@@ -104,7 +108,6 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
                     
                     if (progress === 100) {
                         setShowReport(true);
-                        onSyncUpdate(syncReport);
                         setIsSyncing(false);    
                         setSyncIndex(prev => 0);
                     }else{

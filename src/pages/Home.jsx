@@ -23,7 +23,7 @@ export function Home() {
     const [displayResults, setDisplayResults] = useState(false);
     const [listData, setListData] = useState(products);
     const [filterObject, setFilterObject] = useState([]);
-    const [zohoBulkUpdate, setZohoBulkSyncUpdate] = useState([]);
+    const [zohoBulkUpdate, setZohoBulkUpdate] = useState([]);
     const [actionProcess, setActionProcess] = useState([]); // {id, action} > zoho_sync, set_generic_images
     const [refetchFlag, setRefetchFlag] = useState(false);
     // product editItem 
@@ -47,6 +47,14 @@ export function Home() {
         filters = [
             {
                 title: "Location", name: 'location', default: [], options: locations.map(i => ({ id: i.title, label: i.title })), value: []
+            },
+            {
+                title: "Grade", name: 'grade', default: [], options: [
+                    { id: 'AS IS', label: "AS IS" },
+                    { id: 'Cargo Worthy (CW)', label: "Cargo Worthy (CW)" },
+                    { id: 'IICL', label: "IICL" },
+                    { id: 'Wind and Water tight (WWT)', label: "Wind and Water Tight (WWT)" },
+                ], value: []
             },
             {
                 title: "Condition", name: 'condition', default: [], options: [
@@ -85,7 +93,7 @@ export function Home() {
     useEffect(() => {
         const generated_url = generateURL(generateUrlParams(getAllParams()))
         console.log("check url params -- from refetchFlag useEffect", generated_url);
-        let triggerKeys = ["search", "location", "condition", "size", "height", "selectionoptions"];
+        let triggerKeys = ["search", "location", "condition", "grade", "size", "height", "selectionoptions"];
         let match = triggerKeys.some(key => generated_url.includes(key));
         if (match) {
             setURL(generated_url);
@@ -185,7 +193,6 @@ export function Home() {
     }
 
     const handleTableRowUpdates = (data) => {
-        console.log("update row with this data", data);
         setListData(prevData =>
             prevData.map(i =>
                 parseInt(i.id) === parseInt(data.id) ? { ...data } : i
@@ -194,15 +201,20 @@ export function Home() {
     }
 
     useEffect(()=>{
-        console.log("zohoBulkUpdate",zohoBulkUpdate);
         if(zohoBulkUpdate.length>0){
             // update listData
-            // zohoBulkUpdate.
+            zohoBulkUpdate.forEach(function(v,i){{
+                console.log("code", v.response_data.code===0)
+                if(v.response_data.code===0){
+                    handleTableRowUpdates(v.product);
+                }
+            }})
         }
     },[zohoBulkUpdate])
 
     const handleBulkZohoSyncUpdate = (data) => {
-        setZohoBulkSyncUpdate(data);
+        console.log("handleBulkSync",data)
+        setZohoBulkUpdate(data);
     }
 
     const handleSetGenericImgClick = (product) => {
@@ -263,7 +275,7 @@ export function Home() {
                     setActionProcess(prev => prev.filter(i => i.id !== product.id && action === "zoho_single_sync"));
 
                     if (response.data.report.response_data.code === 0) { // success
-                        handleTableRowUpdates(response.data.product);
+                        handleTableRowUpdates(response.data.report.product);
                         toast.success(`Zoho Single Product Sync Successful! -- Container(${product_id}).`, {
                             position: "bottom-right"
                         });
@@ -331,6 +343,15 @@ export function Home() {
                 </div>
             </div>
             <>
+                {   
+                    !displayResults && <div className="w-full">
+                        <div className="container mx-auto flex justify-center items-center py-10">
+                            <div className="font-bold text-2xl text-stone-400">
+                                Search and Filter to Display Products...
+                            </div>
+                        </div>
+                    </div>
+                }
                 {
                     displayResults && loading && <div className="w-full">
                         <div className="container mx-auto flex justify-center items-center py-10">
