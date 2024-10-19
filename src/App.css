@@ -451,29 +451,29 @@
 }
 /* setting swal custom z-index */
 .swal2-container.swal2-center.swal2-backdrop-show{
-  z-index:99999;
+  z-index:99999 !important;
 }
 
 .react-pagination-control-button{
-  justify-content: center;
-  align-items: center;
-  text-align:center;
-  border-radius:9999px;
-  user-select: none;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align:center !important;
+  border-radius:9999px !important;
+  user-select: none !important;
 }
 
 .react-pagination-control-button.disabled{
-  color:gray;
-  pointer-events: none;
+  color:gray !important;
+  pointer-events: none !important;
 }
 
 .react-pagination-page-button{
-  min-width:28px;
-  border-radius:4px;
-  padding:4px;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
+  min-width:28px !important;
+  border-radius:4px !important;
+  padding:4px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  user-select: none !important;
 }
 
 .react-pagination-page-button.active{
@@ -482,7 +482,18 @@
 }
 
 .react-pagination-_-button{
-  cursor:default;
-  pointer-events: none;
-  user-select:none;
+  cursor:default !important;
+  pointer-events: none !important;
+  user-select:none !important;
+}
+
+.table-sort-button-v2{
+  padding-top: 0.25rem /* 4px */ !important;
+  padding-bottom: 0.25rem /* 4px */ !important;
+  padding-left: 0.5rem /* 8px */ !important;
+  padding-right: 0.5rem /* 8px */ !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #c0c0c0 !important;
+  border-radius: 0.375rem /* 6px */ !important;
 }

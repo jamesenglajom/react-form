@@ -13,8 +13,17 @@ import Swal from 'sweetalert2';
 import ZohoSyncForm from "../components/zoho/sync_form";
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from "../components/pagination";
+import TableSortButton from "../components/table/sort_button_v2";
 
 export function Home() {
+    const sorter = [
+        { id: "name", label: "Name" },
+        { id: "sku", label: "SKU" },
+        { id: "price", label: "Price" },
+        { id: "published_date", label: "Publish Date" },
+        { id: "modified_date", label: "Modified Date" },
+    ];
+
     const API_URL = process.env.REACT_APP_API_URL;
     const base_url = API_URL + '/products';
     const [URL, setURL] = useState(base_url);
@@ -28,6 +37,8 @@ export function Home() {
     const [zohoBulkUpdate, setZohoBulkUpdate] = useState([]);
     const [actionProcess, setActionProcess] = useState([]); // {id, action} > zoho_sync, set_generic_images
     const [refetchFlag, setRefetchFlag] = useState(false);
+    const [sort, setSort] = useState({ orderby: 'modified_date', order: 'desc' });
+    const [paginationResetFlag, setPaginationResetFlag] = useState(true);
     // product editItem 
     const [editProduct, setEditProduct] = useState(null)
     // Modals
@@ -119,12 +130,10 @@ export function Home() {
         temp = temp.filter(i => i.value.length > 0);
         temp = arrayToObject(temp);
         temp['page'] = page;
-        // temp = { ...temp, ...sort };
-        // temp = { ...temp, ...post_status };
+        temp = { ...temp, ...sort };
         if (search != "") {
             temp['search'] = search;
         }
-        // console.log("getAllParams", temp);
         return temp;
     }
 
@@ -151,7 +160,10 @@ export function Home() {
     };
 
 
-    const handleRefetchDataAfterProductCreate = () => {
+    const handleContainerItemCreate = (data) => {
+        toast.success(`Container Item Create Success! -- Container(${data.id}).`, {
+            position: "bottom-right"
+        });
         setFormModal(false);
         setPage(1);
         setRefetchFlag(!refetchFlag);
@@ -208,7 +220,10 @@ export function Home() {
         setFormModal(true);
     }
     
-    const handleTableDetailUpdates = (data) => {
+    const handleContainerItemUpdate = (data) => {
+        toast.success(`Container Item Update Success! -- Container(${data.id}).`, {
+            position: "bottom-right"
+        });
         handleTableRowUpdates(data);
         setFormModal(false);
     }
@@ -324,6 +339,13 @@ export function Home() {
         setRefetchFlag(prev => !prev);
     }   
 
+    const handleSortChange = (v) => {
+        let temp = sort, vtemp = Object.entries(v).pop();
+        temp[vtemp[0]] = vtemp[1];
+        setSort(temp);
+        setRefetchFlag(!refetchFlag);
+    }
+
     return (
         <div>
             {/* Toast container */}
@@ -341,7 +363,7 @@ export function Home() {
                 <ZohoSyncForm locations={locations} onSyncUpdate={handleBulkZohoSyncUpdate} />
             </Modal>
             <Modal  isOpen={formModal} onChange={setFormModal}>
-                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDetailUpdates} onAddProduct={handleRefetchDataAfterProductCreate}></ProductsDetailsForm>
+                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleContainerItemUpdate} onAddProduct={handleContainerItemCreate}></ProductsDetailsForm>
             </Modal>
             <div className="sticky top-0 bg-white shadow-lg z-[2000]">
                 <div className="w-full bg-white">
@@ -360,19 +382,23 @@ export function Home() {
                 </div>
                 {/* pagination */}
                 {
-                        displayResults && pagination?.total_pages && pagination?.total_pages > 0 && pagination?.current && <div className="w-full bg-white">
+                        displayResults && !paginationResetFlag && pagination?.total_pages && pagination?.total_pages > 0 && pagination?.current && <div className="w-full bg-white">
                         <div className="container mx-auto flex items-center justify-between text-[.8em] mt-1">
                             <div><Pagination currentPage={parseInt(pagination?.current)} totalPages={pagination?.total_pages}  onPageChange={handlePageChange}/></div>
-                            <div>page {`${pagination?.current} of ${pagination?.total_pages}`}</div>
+                            <div>page {`${pagination?.current} of ${pagination?.total_pages} (${pagination?.total_count} records)`}</div>
                         </div>
                     </div>
                 }
                 {/* filters */}
                 <div className="w-full bg-white">
                     <div className="container mx-auto">
-                        <div className="w-full flex justify-center items-center">
-                            <div className="w-full px-1 py-4 flex justify-start items-center gap-1">
-                                {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
+                        <div className="w-full flex items-center">
+
+                            <div className="w-full px-1 py-4 flex  items-center gap-1">
+                                <div>
+                                    <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort}></TableSortButton>
+                                </div>
+                                {filterObject && filterObject.map((filter, index) => (<FilterDropDown  key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
                             </div>
                         </div>
                     </div>
@@ -382,7 +408,7 @@ export function Home() {
                 {   
                     !displayResults && <div className="w-full">
                         <div className="container mx-auto flex justify-center items-center py-10">
-                            <div className="font-bold text-2xl text-stone-400">
+                            <div className="font-bold text-2xl text-stone-400 text-center">
                                 Search and Filter to Display Products...
                             </div>
                         </div>
@@ -391,7 +417,7 @@ export function Home() {
                 {
                     displayResults && loading && <div className="w-full">
                         <div className="container mx-auto flex justify-center items-center py-10">
-                            <div className="font-bold text-2xl text-stone-400">
+                            <div className="font-bold text-2xl text-stone-400 text-center">
                                 Loading Containers...
                             </div>
                         </div>
@@ -400,7 +426,7 @@ export function Home() {
                 {
                     displayResults && !loading && listData && listData.length === 0 && <div className="w-full">
                         <div className="container mx-auto flex justify-center items-center py-10">
-                            <div className="font-bold text-2xl text-stone-400">
+                            <div className="font-bold text-2xl text-stone-400  text-center">
                                 No results to display
                             </div>
                         </div>

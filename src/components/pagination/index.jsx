@@ -7,11 +7,17 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const [pages, setPages] = useState([]);
 
   useEffect(()=>{
-    let pages_array = generatePages(current,totalPages);
-    // setTotal(totalPages)
-    // setCurrent(currentPage)
+    setCurrent(currentPage)
+  },[currentPage])
+
+  useEffect(()=>{
+    setTotal(totalPages)
+  },[totalPages])
+
+  useEffect(()=>{
+    let pages_array = generatePages(current,total);
     setPages(pages_array)
-  },[currentPage, totalPages, current])
+  },[current, total])
 
   const handlePageClick = (page) => {
     onPageChange(page)
@@ -56,7 +62,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     <>
     {
       
-    current && <nav className="flex justify-center mt-4 gap-1">
+    current && <nav className="flex justify-center gap-1">
     <button className={`react-pagination-control-button ${current==1?"disabled":""}`} onClick={()=> handleControllerClick("prev")} disabled={current==1}>
         <Icon icon="fontisto:angle-left" />
     </button>

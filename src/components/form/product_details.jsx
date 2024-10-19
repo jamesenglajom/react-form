@@ -184,7 +184,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
           onUpdate(response.data.product);
         }else{
           setFormData(default_form_values);
-          onAddProduct();
+          onAddProduct(response.data.product);
         }
       }).catch((error) => {
         // Handle the error
