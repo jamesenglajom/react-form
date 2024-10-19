@@ -15,8 +15,8 @@ const sizeOptions = [
   { id: "Other", label: "Other" },
 ];
 const heightOptions = [
-  { id: `8' 6" Standard`, label: `8' 6" Standard` },
-  { id: `9' 6" High Cube (HC)`, label: `9' 6" High Cube (HC)` },
+  { id: "standard", label: `8' 6" Standard` },
+  { id: "highcube", label: `9' 6" High Cube (HC)` },
 ];
 const gradeOptions = [
   { id: `Wind and Water tight (WWT)`, label: `Wind and Water tight (WWT)` },
@@ -93,9 +93,9 @@ export const form_fields = [
     value: "20'",
   },
   {
-    property_name: "height",
+    property_name: "form_height",
     // value:"",
-    value: `8' 6" Standard`,
+    value: `standard`,
   },
   {
     property_name: "grade",
@@ -238,13 +238,13 @@ export const form_object = [
       },
       {
         label: "Height",
-        property_name: "height",
+        property_name: "form_height",
         type: "dropdown",
         validation: {},
         tailwind_style: "",
         props: {},
         selection: heightOptions,
-        value: `8' 6" Standard`,
+        value: `standard`,
       },
       {
         label: "Grade",

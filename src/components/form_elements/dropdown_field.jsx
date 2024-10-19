@@ -1,5 +1,5 @@
 // DropdownField.jsx
-import React from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 
 const DropdownField = ({
@@ -12,6 +12,30 @@ const DropdownField = ({
   selection,
   required,
 }) => {
+
+  const [dropdownValue, setDropdownValue] = useState(value);
+  const [dropdownOptions, setDropdownOptions] = useState(selection);
+
+
+  useEffect(()=>{
+    // console.log("dropdownValue", dropdownValue);
+  },[dropdownValue])
+
+
+  useEffect(()=>{
+    // setDropdownValue(transformHeightString(value))
+    setDropdownValue(value)
+  },[value])
+  
+  useEffect(()=>{
+    // setDropdownOptions(selection.map(i=> ({...i, id: transformHeightString(i.id)})))
+    setDropdownOptions(selection)
+  },[selection])
+
+  const transformHeightString = (input) => {
+    return input.replace(/"/g, '\\"'); // Replace double quotes with escaped double quotes
+  };
+
   return (
     <div className="dropdown-field">
       {label && (
@@ -23,13 +47,13 @@ const DropdownField = ({
         type={type}
         name={name}
         id={name}
-        value={value}
+        value={dropdownValue}
         onChange={onChange}
         placeholder={placeholder}
         required={required}
         className="w-full border border-slate-400 p-1 text-sm hover:border-indigo-300 outline-indigo-300">
-        {selection.map((option, index) => (
-          <option key={name + "_" + option.id + "_" + index} value={option?.id}>
+        {dropdownOptions.map((option, index) => (
+          <option key={option.id} value={transformHeightString(option?.id)}>
             {option?.label}
           </option>
         ))}

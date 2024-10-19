@@ -7,6 +7,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import FilterDropDown from "../components/table/filter_dropdown";
 import Modal from "../components/modal";
 import ImageUploader from '../components/images_upload/ImageUploader';
+import ProductsDetailsForm from "../components/form/product_details";
 import axios from "axios";
 import Swal from 'sweetalert2';
 import ZohoSyncForm from "../components/zoho/sync_form";
@@ -31,14 +32,15 @@ export function Home() {
     // Modals
     const [zohoSyncModal, setZohoSyncModal] = useState(false);
     const [imgUploadModal, setImgUploadModal] = useState(false);
+    const [formModal, setFormModal] = useState(false);
 
     useEffect(() => {
-        console.log("useEffectlistData", listData);
+        // console.log("useEffectlistData", listData);
         // setDisplayResults(true);
     }, [listData]);
 
     useEffect(() => {
-        console.log("products from useEffect", products);
+        // console.log("products from useEffect", products);
         setListData(products);
     }, [products]);
 
@@ -92,7 +94,7 @@ export function Home() {
 
     useEffect(() => {
         const generated_url = generateURL(generateUrlParams(getAllParams()))
-        console.log("check url params -- from refetchFlag useEffect", generated_url);
+        // console.log("check url params -- from refetchFlag useEffect", generated_url);
         let triggerKeys = ["search", "location", "condition", "grade", "size", "height", "selectionoptions"];
         let match = triggerKeys.some(key => generated_url.includes(key));
         if (match) {
@@ -121,7 +123,7 @@ export function Home() {
         if (search != "") {
             temp['search'] = search;
         }
-        console.log("getAllParams", temp);
+        // console.log("getAllParams", temp);
         return temp;
     }
 
@@ -147,6 +149,14 @@ export function Home() {
         return array.findIndex(item => item.name === name);
     };
 
+
+    const handleRefetchDataAfterProductCreate = () => {
+        setFormModal(false);
+        setPage(1);
+        setRefetchFlag(!refetchFlag);
+    }
+
+
     const handleFilterChange = (e) => {
         // console.log(`filter`, e.value);
         let temp = filterObject;
@@ -160,7 +170,7 @@ export function Home() {
     }
 
     const handleOnSearch = (v) => {
-        console.log("handleOnSearch", v)
+        // console.log("handleOnSearch", v)
         setSearch(prev => v);
         setPage(prev => 1);
         setRefetchFlag(prev => !prev);
@@ -173,7 +183,7 @@ export function Home() {
     }
 
     const handleTableImageUpdates = (data) => {
-        console.log("handleTableImageUpdate", data);
+        // console.log("handleTableImageUpdate", data);
         if (data?.["images"]) {
             let images_ids = data["images"].map(i => i.id);
             setListData(prevData =>
@@ -192,6 +202,16 @@ export function Home() {
         }
     }
 
+    const handleEditProductClick = (product) => {
+        setEditProduct(product);
+        setFormModal(true);
+    }
+    
+    const handleTableDetailUpdates = (data) => {
+        handleTableRowUpdates(data);
+        setFormModal(false);
+    }
+
     const handleTableRowUpdates = (data) => {
         setListData(prevData =>
             prevData.map(i =>
@@ -204,7 +224,7 @@ export function Home() {
         if(zohoBulkUpdate.length>0){
             // update listData
             zohoBulkUpdate.forEach(function(v,i){{
-                console.log("code", v.response_data.code===0)
+                // console.log("code", v.response_data.code===0)
                 if(v.response_data.code===0){
                     handleTableRowUpdates(v.product);
                 }
@@ -213,7 +233,7 @@ export function Home() {
     },[zohoBulkUpdate])
 
     const handleBulkZohoSyncUpdate = (data) => {
-        console.log("handleBulkSync",data)
+        // console.log("handleBulkSync",data)
         setZohoBulkUpdate(data);
     }
 
@@ -233,7 +253,7 @@ export function Home() {
             axios.post(API_URL + "/product_images/apply_generic_images", formData)
                 .then((response) => {
                     // Handle the response
-                    console.log("generic images response:", response);
+                    // console.log("generic images response:", response);
                     let { updated } = response.data;
                     handleTableImageUpdates(updated);
                     setActionProcess(prev => prev.filter(i => i.id !== product.id && action === "set_generic_images"));
@@ -243,7 +263,7 @@ export function Home() {
                 })
                 .catch((error) => {
                     // Handle the error
-                    console.error("generic images error:", error.response);
+                    // console.error("generic images error:", error.response);
                     // console.log("message", message)
                     const { message } = error.response.data;
                     Swal.fire({
@@ -259,7 +279,7 @@ export function Home() {
     }
 
     const handleZohoSyncClick = (product) => {
-        console.log("handleZohoSync", product)
+        // console.log("handleZohoSync", product)
         const product_id = product.id;
         if (product_id) {
             const action = { id: product.id, action: "zoho_single_sync" };
@@ -269,7 +289,7 @@ export function Home() {
             axios.post(API_URL + "/zoho-single-sync", formData)
                 .then((response) => {
                     // Handle the response
-                    console.log("zoho single sync response:", response);
+                    // console.log("zoho single sync response:", response);
                     // let { updated } = response.data;
                     // handleTableImageUpdates(updated);
                     setActionProcess(prev => prev.filter(i => i.id !== product.id && action === "zoho_single_sync"));
@@ -314,12 +334,15 @@ export function Home() {
             <Modal isOpen={zohoSyncModal} onChange={setZohoSyncModal}>
                 <ZohoSyncForm locations={locations} onSyncUpdate={handleBulkZohoSyncUpdate} />
             </Modal>
+            <Modal  isOpen={formModal} onChange={setFormModal}>
+                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleTableDetailUpdates} onAddProduct={handleRefetchDataAfterProductCreate}></ProductsDetailsForm>
+            </Modal>
             <div className="sticky top-0 bg-white shadow-lg z-[2000]">
                 <div className="w-full bg-white">
                     <div className="container mx-auto">
                         <div className="w-full px-1 py-4 flex justify-end items-center gap-1">
                             <button className="react-primary-button" onClick={() => setZohoSyncModal(true)}>Zoho Batch Sync</button>
-                            <button className="react-primary-outline-button bg-red-100">Add Product</button>
+                            <button onClick={()=> setFormModal(true)} className="react-primary-outline-button bg-red-100">Add Product</button>
                         </div>
                     </div>
                 </div>
@@ -417,7 +440,7 @@ export function Home() {
                                     </div>
                                     <div className="flex p-1 gap-1 w-[120px] justify-center">
                                         <div className="text-center">
-                                            <button data-tooltip-id="edit-product-tooltip" className="action-icon-button">
+                                            <button onClick={()=> handleEditProductClick(product)} data-tooltip-id="edit-product-tooltip" className="action-icon-button">
                                                 <Icon icon="ic:baseline-edit" />
                                             </button>
                                         </div>

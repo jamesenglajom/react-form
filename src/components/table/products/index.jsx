@@ -287,14 +287,12 @@ const ProductsTable = () => {
     }
 
     const handleEditProductClick = (product) => {
-        // console.log("handleEditProductClick", product);
         setEditProduct(product);
         setFormModal(true);
     }
 
 
     const handleEditImageClick = (product) => {
-        // console.log("handleEditProductClick", product);
         setEditProduct(product);
         setImageUploadModal(true);
     }

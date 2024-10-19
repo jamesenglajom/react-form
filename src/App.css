@@ -449,3 +449,7 @@
 .react-primary-outline-button:hover{
   background-color: #fee2e2 !important;
 }
+/* setting swal custom z-index */
+.swal2-container.swal2-center.swal2-backdrop-show{
+  z-index:99999;
+}

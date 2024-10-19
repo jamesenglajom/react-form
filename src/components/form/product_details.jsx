@@ -9,6 +9,7 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
+
 const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   const MySwal = withReactContent(Swal)
 
@@ -16,6 +17,11 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     (acc, field) => ({ ...acc, [field.property_name]: field.value ?? "" }),
     {}
   );
+
+  useEffect(()=>{
+    // console.log("update product?", update);
+  },[update])
+  
 
   const [disableSubmit,setDisableSubmit] = useState(false);
 
@@ -27,12 +33,13 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
       });
     }
   },[locations]);
+
   const [requestError,setRequestError] = useState({});
   const populateData = (data) => {
     let form_payment_type = "buy";
     if(data["cf_payment_type"] !== "buy"){
       form_payment_type = `${data["cf_payment_type"]}-${data["cf_payment_term"][0]}`; 
-      console.log(form_payment_type);
+      // console.log(form_payment_type);
     }
 
     return {
@@ -45,9 +52,9 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
       container_type: data["cf_type_selectiontype"] ?? "",
       doortype:  data["cf_doortype"] ?? "",
       grade: data["cf_grade"]??"Wind and Water tight (WWT)",
-      height: data["cf_height"] ?? "10'",
-      length_width:  data["cf_length_width"] ?? `8' 6" Starndard`,
-      location: data["cf_location"] ?? "Atlanta, GA",
+      form_height: data["cf_height"] ? toFormHeight(data["cf_height"]): "standard",
+      length_width:  data["cf_length_width"] ?? "20'",
+      location: data["cf_location"] ?? "Abilene, TX",
       payment_type: form_payment_type,
       reefer_container: data["cf_reefer_container"] === "1",
       reefer_container_status: data["cf_reefer_container_status"] === "1",
@@ -57,10 +64,19 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     }
   }
 
+  const toFormHeight = (height) => {
+    return height.includes("Standard") ? "standard":"highcube";
+  }
+
+  const transformHeightString = (input) => {
+    return input.replace(/"/g, '\\"'); // Replace double quotes with escaped double quotes
+  };
+
   // console.log("default_form_values",default_form_values);
   if(update){
     try{
       default_form_values = populateData(update)
+      // console.log("to-update-product populated data: ", default_form_values)
     }catch(err){
       console.log("err data", err)
     }
@@ -86,7 +102,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     // console.log("Form submitted:", formData);
     console.log("formatted data: ", formatData(formData));
     // Handle form submission
-    createUpdateProduct(formatData(formData));
+    // createUpdateProduct(formatData(formData));
   };
 
   const permalinkSlug = (title) => {
@@ -103,12 +119,10 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   },[requestError]);
 
   const handleResponseError = () => {
-    console.log("REQUEST ERROR:",requestError);
     if(requestError.code == 400){
       if(requestError.message === "DUPLICATE_SKU"){
         let dupli_html = "";
         requestError.data.duplicates.forEach((v,i)=>{
-          console.log("dupli", v);
           dupli_html += `
           <div class="table w-full border-collapse border border-gray-500 rounded-md mt-1 mb-1">
             <div class="table-row">
@@ -163,7 +177,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
       }).then((response) => {
         // Handle the response
         setDisableSubmit(false);
-        console.log("update details response:", response.data);
+        // console.log("update details response:", response.data);
         if (update) {
           let populated_data = populateData(response.data.product);
           setFormData(populated_data);
@@ -187,23 +201,27 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   }
 
   const formatData = (data) => {
+    const tmp_data = data;
     let tmp_custom_fields = {};
     let data_keys = [];
     // set default value for property
-    data["is_product_rent-to-own"] = false;
-    data["store_id"] = 121; // vna
+    tmp_data["is_product_rent-to-own"] = false;
+    tmp_data["store_id"] = 121; // vna
     // handle permalink value base on container_title
-    if(data["container_title"]){
-      data["permalink"] = permalinkSlug(data["container_title"]);
+    if(tmp_data["container_title"]){
+      tmp_data["permalink"] = permalinkSlug(tmp_data["container_title"]);
     }
     // handle store id
-    if(data["location"]){
-      data["store_id"] = locations.filter(i=> i.title === data["location"])[0].id;
+    if(tmp_data["location"]){
+      tmp_data["store_id"] = locations.filter(i=> i.title === tmp_data["location"])[0].id;
     }
+    console.log("tmp_data['height']: ", tmp_data["height"])
+    // set true height values
+    tmp_data["height"] = tmp_data["form_height"] === "standard" ? `8' 6" Standard`: `9' 6" High Cube (HC)`;  
     // handle container type
-    data["type"] = data["container_type"];
-    data["type_selectiontype"] = data["container_type"];
-    // delete data["container_type"];
+    tmp_data["type"] = tmp_data["container_type"];
+    tmp_data["type_selectiontype"] = tmp_data["container_type"];
+    // delete tmp_data["container_type"];
     // 
     let custom_fields = [
       "container_title",
@@ -226,23 +244,24 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     ];
 
     let formattedData = {
-      title: data["title"],
-      categories: data["categories"],
-      price: data["price"],
+      title: tmp_data["title"],
+      categories: tmp_data["categories"],
+      price: tmp_data["price"],
       custom_fields: {}
     }
 
     if(update){
       formattedData["id"] = update["id"];
     }
-    data_keys = Object.keys(data);
+    data_keys = Object.keys(tmp_data);
     // console.log("to cf_keys", data_keys);
     data_keys.forEach((v, i) => {
       if (custom_fields.includes(v)) {
-        tmp_custom_fields[v] = data[v];
+        tmp_custom_fields[v] = tmp_data[v];
       }
     })
     formattedData["custom_fields"] = tmp_custom_fields;
+    console.log("formattedData to be sent: ", formattedData)
     return formattedData;
   }
 
@@ -343,7 +362,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
 
             <button
               type="submit"
-              className="mt-5 ml-3 px-3 py-1 upper bg-red-500" disabled={disableSubmit}>
+              className={`react-primary-button ${disableSubmit?"disabled":""}`} disabled={disableSubmit}>
               {
                 disableSubmit ? "Processing...": "Submit" 
               }
