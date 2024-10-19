@@ -45,7 +45,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <Icon icon="fontisto:angle-left" />
     </button>
     {
-      pages.length > 0 < 6 && 
+      pages.length > 0 && 
       pages.map(i=>(
         <button key={`page-${i}`}  className={`react-pagination-page-button ${current==i?"active":""}`} onClick={()=> handlePageClick(i)}>{i}</button>
       )) 
