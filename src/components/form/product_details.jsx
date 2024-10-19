@@ -102,7 +102,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
     // console.log("Form submitted:", formData);
     console.log("formatted data: ", formatData(formData));
     // Handle form submission
-    // createUpdateProduct(formatData(formData));
+    createUpdateProduct(formatData(formData));
   };
 
   const permalinkSlug = (title) => {
