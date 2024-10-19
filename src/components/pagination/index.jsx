@@ -4,14 +4,20 @@ import { Icon } from '@iconify/react/dist/iconify.js';
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const [current, setCurrent] = useState(null);
   const [total, setTotal] = useState(totalPages);
+  const [pages, setPages] = useState([]);
+
 
   useEffect(()=>{
     setCurrent(currentPage)
   },[currentPage])
 
   useEffect(()=>{
+    let pages_array = Array.from({ length: parseInt(totalPages) }, (_, i) => i + 1);
     setTotal(totalPages)
+    setPages(pages_array)
   },[totalPages])
+
+  
 
   const handlePageClick = (page) => {
     onPageChange(page)
@@ -39,8 +45,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <Icon icon="fontisto:angle-left" />
     </button>
     {
-      parseInt(total) < 6 && 
-      Array.from({ length: parseInt(total) }, (_, i) => i + 1).map(i=>(
+      pages.length > 0 < 6 && 
+      pages.map(i=>(
         <button key={`page-${i}`}  className={`react-pagination-page-button ${current==i?"active":""}`} onClick={()=> handlePageClick(i)}>{i}</button>
       )) 
     }
