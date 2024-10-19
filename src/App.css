@@ -453,3 +453,30 @@
 .swal2-container.swal2-center.swal2-backdrop-show{
   z-index:99999;
 }
+
+.react-pagination-control-button{
+  justify-content: center;
+  align-items: center;
+  text-align:center;
+  border-radius:9999px;
+  user-select: none;
+}
+
+.react-pagination-control-button.disabled{
+  color:gray;
+  pointer-events: none;
+}
+
+.react-pagination-page-button{
+  min-width:28px;
+  border-radius:4px;
+  padding:4px;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+.react-pagination-page-button.active{
+  background-color: #dc2626 !important;
+  color:white !important;
+}

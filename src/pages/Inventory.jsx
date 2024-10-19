@@ -2,21 +2,21 @@ import { useState } from "react";
 
 export function InventoryPage(){
     
-    const [tabs, setTabs] = useState(()=>{
-        return [
-            {name:"specs", label: "Specifications"},
-            {name:"reefer", label: "Reefer"},
-            {name:"payment", label: "Payment"},
-            {name:"others", label: "Others"},
-        ];
-    })
-    const [tab, setTab] = useState("specs");
+    // const [tabs, setTabs] = useState(()=>{
+    //     return [
+    //         {name:"specs", label: "Specifications"},
+    //         {name:"reefer", label: "Reefer"},
+    //         {name:"payment", label: "Payment"},
+    //         {name:"others", label: "Others"},
+    //     ];
+    // })
+    // const [tab, setTab] = useState("specs");
 
 
     return <>
-    <h1>Temporary test page for UI Page</h1>
+    <h1>Inventory</h1>
     {/* wrapper */}
-    <div className="p-5 w-full">
+    {/* <div className="p-5 w-full">
         <div className="">
             <div className="flex items-center justify-between py-1 px-3">
                 <div>title</div>
@@ -24,9 +24,7 @@ export function InventoryPage(){
                     <button className="rounded-full h-[35px] w-[35px] bg-stone-50 border border-stone-300">x</button>
                 </div>
             </div>
-            {/* form */}
             <div className="flex w-full shadow-lg border border-stone-400">
-                {/* tabs */}
                 <div className="w-[150px]">
                     {
                         tabs.map((i,index)=>(
@@ -36,9 +34,7 @@ export function InventoryPage(){
                         ))
                     }
                 </div>
-                {/* content wrap */}
                 <div className="p-4">
-                    {/* content */}
                     {
                         tab === "specs" && 
                         <div>
@@ -54,6 +50,6 @@ export function InventoryPage(){
                 <button className="react-primary-button">Submit</button>
             </div>
         </div>
-    </div>
+    </div> */}
     </>
 }

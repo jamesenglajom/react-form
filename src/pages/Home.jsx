@@ -12,6 +12,7 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import ZohoSyncForm from "../components/zoho/sync_form";
 import { toast, ToastContainer } from 'react-toastify';
+import Pagination from "../components/pagination";
 
 export function Home() {
     const API_URL = process.env.REACT_APP_API_URL;
@@ -318,6 +319,11 @@ export function Home() {
         }
     }
 
+    const handlePageChange = (page) => {
+        setPage(page);
+        setRefetchFlag(prev => !prev);
+    }   
+
     return (
         <div>
             {/* Toast container */}
@@ -346,20 +352,27 @@ export function Home() {
                         </div>
                     </div>
                 </div>
+                {/* search bar */}
                 <div className="w-full bg-red-500">
                     <div className="container mx-auto ">
                         <UltimateSearch onSearch={handleOnSearch}></UltimateSearch>
                     </div>
                 </div>
+                {/* pagination */}
+                {
+                    displayResults && pagination?.current &&  <div className="w-full bg-white">
+                        <div className="container mx-auto flex items-center justify-between text-[.8em] mt-1">
+                            <div><Pagination currentPage={pagination?.current} totalPages={pagination?.total_pages}  onPageChange={handlePageChange}/></div>
+                            <div>page {`${pagination?.current} of ${pagination?.total_pages}`}</div>
+                        </div>
+                    </div>
+                }
                 {/* filters */}
                 <div className="w-full bg-white">
                     <div className="container mx-auto">
-                        <div className="w-full flex justify-between items-center">
+                        <div className="w-full flex justify-center items-center">
                             <div className="w-full px-1 py-4 flex justify-start items-center gap-1">
                                 {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
-                            </div>
-                            <div className="text-stone-500 font-semibold whitespace-nowrap">
-                                { displayResults && !loading && `${pagination.total_count} records displayed`}.
                             </div>
                         </div>
                     </div>
