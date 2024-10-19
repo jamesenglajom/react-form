@@ -480,3 +480,9 @@
   background-color: #dc2626 !important;
   color:white !important;
 }
+
+.react-pagination-_-button{
+  cursor:default;
+  pointer-events: none;
+  user-select:none;
+}
