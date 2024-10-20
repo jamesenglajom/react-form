@@ -19,7 +19,7 @@ const ProductsDetailsForm = ({locations, update, onUpdate, onAddProduct}) => {
   );
 
   useEffect(()=>{
-    // console.log("update product?", update);
+    console.log("update product?", update);
   },[update])
   
 

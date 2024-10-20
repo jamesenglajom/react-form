@@ -346,6 +346,11 @@ export function Home() {
         setRefetchFlag(!refetchFlag);
     }
 
+    const handleCreateContainerButton = () => {
+        setEditProduct(null);
+        setFormModal(true);
+    }
+
     return (
         <div>
             {/* Toast container */}
@@ -370,7 +375,7 @@ export function Home() {
                     <div className="container mx-auto">
                         <div className="w-full px-1 py-4 flex justify-end items-center gap-1">
                             <button className="react-primary-button" onClick={() => setZohoSyncModal(true)}>Zoho Batch Sync</button>
-                            <button onClick={()=> setFormModal(true)} className="react-primary-outline-button bg-red-100">Add Product</button>
+                            <button onClick={handleCreateContainerButton} className="react-primary-outline-button bg-red-100">Add Product</button>
                         </div>
                     </div>
                 </div>

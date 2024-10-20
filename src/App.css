@@ -298,6 +298,8 @@
 
 .table-filter-tab-clear-button.active{
   text-decoration-line: underline !important;
+  padding:0px !important;
+  background: transparent !important;
   cursor: pointer !important;
   color:#818cf8 !important;
   pointer-events: auto;
@@ -309,6 +311,7 @@
 
 .table-filter-tab-button{
   user-select: none !important;
+  color:#292524 !important;
   font-size: 0.75rem /* 12px */ !important;
   line-height: 1rem /* 16px */ !important;
   padding-top: 0.25rem /* 4px */ !important;
@@ -326,6 +329,7 @@
 
 
 .table-filter-tab-button.active{
+  color:black !important;
   background:#f5f5f4 !important;
   border-color:#c0c0c0 !important;
   border-style: solid !important;
