@@ -387,7 +387,7 @@ export function Home() {
                 </div>
                 {/* pagination */}
                 {
-                        displayResults && !paginationResetFlag && pagination?.total_pages && pagination?.total_pages > 0 && pagination?.current && <div className="w-full bg-white">
+                        displayResults && pagination?.total_pages && pagination?.total_pages > 0 && pagination?.current && <div className="w-full bg-white">
                         <div className="container mx-auto flex items-center justify-between text-[.8em] mt-1">
                             <div><Pagination currentPage={parseInt(pagination?.current)} totalPages={pagination?.total_pages}  onPageChange={handlePageChange}/></div>
                             <div>page {`${pagination?.current} of ${pagination?.total_pages} (${pagination?.total_count} records)`}</div>
