@@ -293,12 +293,13 @@
   font-size: 0.75rem /* 12px */ !important;
   line-height: 1rem /* 16px */ !important;
   color:#a8a29e !important;
+  padding:0px !important;
+  border: none !important;
   pointer-events: none;
 }
 
 .table-filter-tab-clear-button.active{
   text-decoration-line: underline !important;
-  padding:0px !important;
   background: transparent !important;
   cursor: pointer !important;
   color:#818cf8 !important;
