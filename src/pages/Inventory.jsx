@@ -6,6 +6,13 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import FormRadio from "../components/form_elements/form_radio";
 export function InventoryPage() {
     // static
+    const tabs = [
+        { name: "location", label: "Location" },
+        { name: "specs", label: "Specifications" },
+        { name: "pricing_terms", label: "Pricing & Terms" },
+        { name: "other", label: "Other" },
+        { name: "category", label: "Category" },
+    ];
     const form_start_tab = "location";
     const form_last_tab = "category";
     const payment_terms_options = [
@@ -55,26 +62,31 @@ export function InventoryPage() {
         { value: "Double Doors at 1 End", label: "Double Doors at 1 End" },
     ];
 
-    // const height
+    const sales_tag_options = [
+        { value: "", label: "None" },
+        { value: "best seller", label: "Best Seller" },
+        { value: "top choice", label: "Top Choice" },
+    ];
+
+    const reefer_options = [
+        { value: "1", label: "Yes" },
+        { value: "0", label: "No" },
+    ];
+
+    const reefer_status_options = [
+        { value: "1", label: "Yes" },
+        { value: "0", label: "No" },
+    ];
+
     const { data: locations } = useFetchDepot();
     const { data: categories } = useFetchCategory();
-    const [tab, setTab] = useState("category");
-    const [tabIndex, setTabIndex] = useState(0);
-    const [tabs, setTabs] = useState(() => {
-        return [
-            { name: "location", label: "Location" },
-            { name: "specs", label: "Specifications" },
-            { name: "payment_term", label: "Payment Terms" },
-            { name: "price", label: "Price" },
-            { name: "reefer", label: "Reefer" },
-            { name: "category", label: "Category" },
-        ];
-    });
+    const [tab, setTab] = useState("location");
     // depot options
     const [depot, setDepot] = useState("123");
     const [selectedDepotDetails, setSelectedDepotDetails] = useState(null);
     const [selectedCategories, setSelectedCategories] = useState([15]);
     const [selectedTerm, setSelectedTerm] = useState("");
+    const [price, setPrice] = useState(0);
     // specs state
     const [selectedSize, setSelectedSize] = useState("20'");
     const [selectedHeight, setSelectedHeight] = useState("standard");
@@ -82,6 +94,12 @@ export function InventoryPage() {
     const [selectedCondition, setSelectedCondition] = useState("Used");
     const [selectedSelectionType, setSelectedSelectionType] = useState("First off the Stack (FO)");
     const [selectedDoorType, setSelectedDoorType] = useState("Double Doors at 1 End");
+    // other
+    const [containerGradeTitle, setContainerGradeTitle] = useState("");
+    const [containerType, setContainerType] = useState("");
+    const [selectedSalesTag, setSelectedSalesTag] = useState("");
+    const [selectedReefer, setSelectedReefer] = useState("1");
+    const [selectedReeferStatus, setSelectedReeferStatus] = useState("1");
 
     useEffect(() => {
         if (locations && locations.length > 0) {
@@ -100,13 +118,14 @@ export function InventoryPage() {
     }
 
     const handleCategoryClick = (category_id) => {
-        console.log("handleCategoryClick", category_id);
         setSelectedCategories(prev => {
-            console.log("prev", prev)
-            console.log("category_id", category_id)
-            console.log(prev.includes(parseInt(category_id)))
             if (prev.includes(parseInt(category_id))) {
-                return prev.filter(i => parseInt(i) !== parseInt(category_id))
+                let filtered = prev.filter(i => parseInt(i) !== parseInt(category_id));
+                if(filtered.length === 0){
+                    return [15];
+                }else{
+                    return filtered;
+                }
             } else {
                 return [...prev, parseInt(category_id)];
             }
@@ -128,7 +147,6 @@ export function InventoryPage() {
 
 
     const handleFormRadioChange = ({ prop, val }) => {
-        console.log("formRadioChanged", `${prop}: ${val}`);
         switch (prop) {
             case "size":
                 setSelectedSize(val);
@@ -148,25 +166,79 @@ export function InventoryPage() {
             case "door_type":
                 setSelectedDoorType(val);
                 break;
+            case "sales_tag":
+                setSelectedSalesTag(val);
+                break;
+            case "reefer":
+                setSelectedReefer(val);
+                break;
+            case "reefer_status":
+                setSelectedReeferStatus(val);
+                break;
         }
     }
-    return <>
-        <h1>Inventory</h1>
-        {/* wrapper */}
-        <div className="p-5 w-full">
+
+    const handleFormNavController = (direction) => {
+        // direction prev or next
+        setTab(prev => {
+            const index = tabs.findIndex(i => i.name === prev);
+            if (direction === "prev") {
+                return tabs[index - 1].name;
+            } else {
+                return tabs[index + 1].name;
+            }
+        })
+    }
+
+    const handlePriceInput = (e) => {
+        const {value} = e.target;
+        // Allow only numeric input and empty string
+        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+          setPrice(value); // Update the state
+        }
+    }
+
+    const handleContainerGradeTitle = (e) => {
+        const {value} = e.target;
+        setContainerGradeTitle(value);
+    }
+
+    const handleContainerType = (e) => {
+        const {value} = e.target;
+        setContainerType(value);
+    }
+
+
+    const Modal = () => {
+        return (
+            <div className="z-[9999] bg-indigo-300 fixed top-0 bottom-0 left-0 right-0 w-full h-svh flex justify-center items-center">
+                <div className="shadow-lg w-[800px] bg-white rounded-lg">
+                    <Form></Form>
+                </div>
+            </div>
+        );
+    };
+
+    const Form = () => {
+        return (
             <div className="">
-                <div className="flex items-center justify-between py-1 px-3">
-                    <div>title</div>
+                <div className="flex justify-between p-4 border-b">
+                    <div className="pr-[50px]">
+                        <div className="font-semibold">
+                            Rent-To-Own Used 20 ft Standard Shipping Container - Wind & Water Tight (48 Months) - Abilene, TX
+                        </div>
+                        <div>SKU: U20SDV1DDWWTFOALTXRTO48</div>
+                    </div>
                     <div>
-                        <button className="rounded-full h-[35px] w-[35px] bg-stone-50 border border-stone-300">x</button>
+                        <Icon icon="mingcute:close-fill" />
                     </div>
                 </div>
-                <div className="flex w-full shadow-lg border border-stone-400">
-                    <div className="w-[150px] cursor-pointer flex flex-col">
+                <div className="flex w-full p-0 min-h-[400px]">
+                    <div className="w-[180px] cursor-pointer flex flex-col bg-stone-200">
                         {
                             tabs.map((i, index) => (
-                                <div onClick={() => setTab(i.name)} key={`tab-${i.name}`} className={`flex-1 ${index < (tabs.length - 1) ? "border-b" : ``}  ${tab === i.name ? "" : "border-r"} border-stone-400`}>
-                                    <div className={`p-3 ${tab === i.name ? "font-bold" : "text-stone-400"}`}>{i.label}</div>
+                                <div onClick={() => setTab(i.name)} key={`tab-${i.name}`} className={`flex-1 flex items-center px-4 py-[15px] border-white ${index < (tabs.length - 1) ? "border-b" : ``}  ${tab === i.name ? "bg-white" : "border-r"}`}>
+                                    <div className={`${tab === i.name ? "font-bold" : "text-stone-400"}`}>{i.label}</div>
                                 </div>
                             ))
                         }
@@ -174,69 +246,17 @@ export function InventoryPage() {
                     <div className="w-full p-4">
                         {
                             tab === "specs" &&
-                            <div className="w-full flex flex-col h-full gap-4">
+                            <div className="w-full flex flex-col gap-2">
                                 <FormRadio label={`Size`} property={"size"} options={size_options} value={selectedSize} defaultValue={"20'"} onSelectionChange={handleFormRadioChange} />
                                 <FormRadio label={`Height`} property={"height"} options={height_options} value={selectedHeight} defaultValue={"standard"} onSelectionChange={handleFormRadioChange} />
                                 <FormRadio label={`Grade`} property={"grade"} options={grade_options} value={selectedGrade} defaultValue={"Wind and Water tight (WWT)"} onSelectionChange={handleFormRadioChange} />
                                 <FormRadio label={`Condition`} property={"condition"} options={condition_options} value={selectedCondition} defaultValue={"Used"} onSelectionChange={handleFormRadioChange} />
                                 <FormRadio label={`Selection Type`} property={"selection_type"} options={selection_type_options} value={selectedSelectionType} defaultValue={"First off the Stack (FO)"} onSelectionChange={handleFormRadioChange} />
                                 <FormRadio label={`Door Type`} property={"door_type"} options={door_type_options} value={selectedDoorType} defaultValue={"Double Doors at 1 End"} onSelectionChange={handleFormRadioChange} />
-
-
-
-                                {/* <div>
-                                <div className="mb-1 font-semibold">Size</div>
-                                <div className="flex items-center gap-2">
-                                    {
-                                        size_options.map((v,i)=>
-                                            <div key={`size-${i}`} data-value={v.value} className={`cursor-pointer p-2 user-select-none flex items-center border rounded ${selectedSize === v.value ? "border-green-500":"border-stone-300 hover:border-stone-500"}`}
-                                             onClick={()=> handleSizeClick(v.value)}>
-                                                <div className="pr-2 use-select-none">
-                                                    <Icon icon="lets-icons:check-fill" className={`${selectedSize === v.value ? "text-green-500":"text-stone-600"}`}/>
-                                                </div>
-                                                <div className="user-select-none">{v.label}</div>
-                                            </div>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                            <div>
-                                <div className="mb-1 font-semibold">Height</div>
-                                <div className="flex items-center gap-2">
-                                    {
-                                        height_options.map((v,i)=>
-                                            <div key={`height-${i}`} data-value={v.value} className={`cursor-pointer p-2 user-select-none flex items-center border rounded ${selectedHeight === v.value ? "border-green-500":"border-stone-300 hover:border-stone-500"}`}
-                                             onClick={()=> handleHeightClick(v.value)}>
-                                                <div className="pr-2 use-select-none">
-                                                    <Icon icon="lets-icons:check-fill" className={`${selectedHeight === v.value ? "text-green-500":"text-stone-600"}`}/>
-                                                </div>
-                                                <div className="user-select-none">{v.label}</div>
-                                            </div>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <div className="mb-1 font-semibold">Grade</div>
-                                <div className="flex items-center gap-2">
-                                    {
-                                        grade_options.map((v,i)=>
-                                            <div key={`grade-${i}`} data-value={v.value} className={`cursor-pointer p-2 user-select-none flex items-center border rounded ${selectedGrade === v.value ? "border-green-500":"border-stone-300 hover:border-stone-500"}`}
-                                             onClick={()=> handleGradeClick(v.value)}>
-                                                <div className="pr-2 use-select-none">
-                                                    <Icon icon="lets-icons:check-fill" className={`${selectedGrade === v.value ? "text-green-500":"text-stone-600"}`}/>
-                                                </div>
-                                                <div className="user-select-none">{v.label}</div>
-                                            </div>
-                                        )
-                                    }
-                                </div>
-                            </div> */}
                             </div>
                         }
                         {
-                            tab === "payment_term" &&
+                            tab === "pricing_terms" &&
                             <div className="w-full flex flex-col h-full gap-1">
                                 {
                                     payment_terms_options.map((v, i) =>
@@ -247,6 +267,12 @@ export function InventoryPage() {
                                             <div className={`${selectedTerm === v.value ? "text-white" : "text-stone-500"}`}>{v.label}</div>
                                         </div>
                                     )
+                                }
+                                {
+                                    <div className="pt-2">
+                                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                                        <input type="number" value={price} onChange={handlePriceInput} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                    </div>
                                 }
                             </div>
                         }
@@ -268,7 +294,8 @@ export function InventoryPage() {
                         {
                             tab === "location" &&
                             <div className="w-full">
-                                <select name="depots" id="depots" value={depot} onChange={handleDepotOnChange} className="w-full border border-stone-400 py-2 px-3">
+                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Location</label>
+                                <select name="depots" id="depots" value={depot} onChange={handleDepotOnChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     {
                                         locations && locations.length > 0 && locations.map((v, i) =>
                                             <option key={`depot-${v.id}`} value={v.id}>
@@ -286,20 +313,42 @@ export function InventoryPage() {
                                 }
                             </div>
                         }
+                        {
+                            tab === "other" &&
+                            <div className="w-full flex flex-col gap-4">
+                                <div className="">
+                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Container Grade Title</label>
+                                    <input value={containerGradeTitle} onChange={handleContainerGradeTitle} type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                </div>
+                                <div className="">
+                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Container Type</label>
+                                    <input value={containerType} onChange={handleContainerType} type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                </div>
+                                <FormRadio label={`Sales Tag`} property={"sales_tag"} options={sales_tag_options} value={selectedSalesTag} defaultValue={""} onSelectionChange={handleFormRadioChange} />
+                                <FormRadio label={`Reefer Container`} property={"reefer"} options={reefer_options} value={selectedReefer} defaultValue={"1"} onSelectionChange={handleFormRadioChange} />
+                                <FormRadio label={`Reefer Container Status`} property={"reefer_status"} options={reefer_status_options} value={selectedReeferStatus} defaultValue={"1"} onSelectionChange={handleFormRadioChange} />
+                            </div>
+                        }
                     </div>
                 </div>
-                <div className="mt-5">
+                <div className="p-4 border-t">
                     <div className="w-full flex justify-between items-center">
                         <div>
-                            <button className={`react-secondary-button mr-4 ${tab !== form_start_tab ? "":"disabled"}`}>Previous</button>
-                            <button className={`react-secondary-button ${tab !== form_last_tab ? "":"disabled"}`}>Next</button>
+                            <button onClick={() => handleFormNavController("prev")} className={`react-secondary-button mr-4 ${tab !== form_start_tab ? "" : "disabled"}`}>Previous</button>
+                            <button onClick={() => handleFormNavController("next")} className={`react-secondary-button ${tab !== form_last_tab ? "" : "disabled"}`}>Next</button>
                         </div>
                         <div>
-                            <button className={`react-primary-button ${tab === form_last_tab ? "":"disabled"}`}>Submit</button>
+                            <button className={`react-primary-button ${tab === form_last_tab ? "" : "disabled"}`}>Submit</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        )
+    }
+
+    return <>
+        <h1>Inventory</h1>
+        {/* wrapper */}
+        <Modal />
     </>
 }

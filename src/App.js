@@ -15,10 +15,10 @@ function App() {
   }
   return (
     <div className="App">
-      {/* <nav className="w-full bg-stone-900 p-5 flex justify-between">
+      <nav className="w-full bg-stone-900 p-5 flex justify-between">
         <ul  className="flex items-center gap-5">
           <li>
-            <NavLink  className={({isActive}) => isActive ? 'bg-slate-600 rounded p-1 text-white': 'rounded p-1 text-white'} to="/">Home</NavLink>
+            <NavLink  className={({isActive}) => isActive ? 'bg-slate-600 rounded p-1 text-white': 'rounded p-1 text-white'} to="/onsite-zoho-crm">Home</NavLink>
           </li>
           <li>
             <NavLink  className={({isActive}) => isActive ? 'bg-slate-600 rounded p-1 text-white': 'rounded p-1 text-white'} to="/shipping-containers">Shipping Containers</NavLink>
@@ -27,9 +27,9 @@ function App() {
             <NavLink  className={({isActive}) => isActive ? 'bg-slate-600 rounded p-1 text-white': 'rounded p-1 text-white'} to="/inventory">Inventory</NavLink>
           </li>
         </ul>
-      </nav> */}
+      </nav>
       <Routes>
-        <Route path="/" element={<Home />}/>
+        <Route path="/onsite-zoho-crm" element={<Home />}/>
         <Route path="/shipping-containers" element={<ShippingContainersPage />}/>
         <Route path="/inventory" element={<InventoryPage />}/>
       </Routes>
