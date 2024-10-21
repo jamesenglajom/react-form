@@ -296,6 +296,7 @@
   padding:0px !important;
   border: none !important;
   pointer-events: none;
+  background-color:white !important;
 }
 
 .table-filter-tab-clear-button.active{
@@ -487,7 +488,8 @@
   text-align:center !important;
   color: black !important;
   padding:0px !important;
-  /* border-radius:9999px !important; */
+  background-color:white !important;
+  border-radius:0px !important;
   user-select: none !important;
   border:none !important;
   border-color: none !important;
@@ -523,6 +525,7 @@
   padding:5px !important;
   border:none !important;
   color:black !important;
+  background-color:white !important;
 }
 
 .table-sort-button-v2{
@@ -536,4 +539,8 @@
   border-radius: 0.375rem /* 6px */ !important;
   background-color:white !important;
   color:black;
+}
+
+.table-sort-button-v2 .iconify{
+  color:black !important;
 }

@@ -38,7 +38,7 @@ const TableSortButtonV2 = ({ options, onChange, value, disabled }) => {
         <div className="relative">
             {/* <button onClick={handleOpenDropdown} className="flex items-center border-[1px] border-gray-300 text-lg py-[5px] px-[8px] rounded-md text-gray-600 mr-[5px]"> */}
             <button onClick={handleOpenDropdown} className="table-sort-button-v2">
-                <Icon icon="mage:filter" />
+                <Icon icon="mage:filter" className="text-indigo-700" />
             </button>
             {isOpen && (<div ref={dropdownRef} className="generic-dropdown absolute top-[100%] bg-white border border-stone-300 left-0 rounded-md mt-[5px] z-[10]">
                 <div className="overflow-hidden w-full p-3 grid gap-[5px]">
