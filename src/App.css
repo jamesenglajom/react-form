@@ -438,6 +438,28 @@
   background-color: #b91c1c !important;
   border: 2px solid #b91c1c !important;
 }
+.react-secondary-button{
+  font-size:0.8em !important;
+  border-radius: 0.25rem !important;
+  color:white !important;
+  background-color: #404040 !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  border: 2px solid #404040 !important;
+  user-select:none;
+}
+.react-secondary-button.disabled{
+  background-color: #9f9f9f !important;
+  border: 2px solid #9f9f9f !important;
+  pointer-events:none;
+}
+.react-secondary-button:hover{
+  background-color: #4e4e4e !important;
+  border: 2px solid #4e4e4e !important;
+}
+
 
 .react-primary-outline-button{
   font-size:0.8em !important;
