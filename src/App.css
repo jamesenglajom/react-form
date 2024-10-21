@@ -462,8 +462,13 @@
   justify-content: center !important;
   align-items: center !important;
   text-align:center !important;
-  border-radius:9999px !important;
+  color: black !important;
+  padding:0px !important;
+  /* border-radius:9999px !important; */
   user-select: none !important;
+  border:none !important;
+  border-color: none !important;
+  border-style: none !important;
 }
 
 .react-pagination-control-button.disabled{
@@ -478,6 +483,9 @@
   justify-content: center !important;
   align-items: center !important;
   user-select: none !important;
+  border:none !important;
+  color:black !important;
+  background: white !important;
 }
 
 .react-pagination-page-button.active{
