@@ -14,6 +14,8 @@ import ZohoSyncForm from "../components/zoho/sync_form";
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from "../components/pagination";
 import TableSortButton from "../components/table/sort_button_v2";
+import { useLocation } from 'react-router-dom';
+
 
 export function Home() {
     const sorter = [
@@ -23,7 +25,7 @@ export function Home() {
         { id: "published_date", label: "Publish Date" },
         { id: "modified_date", label: "Modified Date" },
     ];
-
+    const location = useLocation();
     const API_URL = process.env.REACT_APP_API_URL;
     const base_url = API_URL + '/products';
     const [URL, setURL] = useState(base_url);
@@ -47,16 +49,29 @@ export function Home() {
     const [formModal, setFormModal] = useState(false);
 
     // useEffect(() => {
-    //     // console.log("useEffectlistData", listData);
+    //     // console.log("useEffectlistData", listData);   
     //     // setDisplayResults(true);
     // }, [listData]);
+    useEffect(() => {
+        ZohoAuth();
+    }, []);
 
+    const ZohoAuth = () => {
+        const queryParams = new URLSearchParams(location.search);
+        const connected = queryParams.get('connected'); // Access the query parameter
+        if (connected) {
+            
+        } else {
+            console.log("ZauthURL",process.env.REACT_APP_ZOHO_AUTH_URL);
+            window.location.href = process.env.REACT_APP_ZOHO_AUTH_URL; // Replace with your external URL
+        }
+    }
     useEffect(() => {
         setListData(products);
     }, [products]);
 
     useEffect(() => {
-        if(pagination){
+        if (pagination) {
             setPaginator(pagination);
         }
     }, [pagination]);
@@ -226,7 +241,7 @@ export function Home() {
         setEditProduct(product);
         setFormModal(true);
     }
-    
+
     const handleContainerItemUpdate = (data) => {
         toast.success(`Container Item Update Success! -- Container(${data.id}).`, {
             position: "bottom-right"
@@ -243,17 +258,19 @@ export function Home() {
         );
     }
 
-    useEffect(()=>{
-        if(zohoBulkUpdate.length>0){
+    useEffect(() => {
+        if (zohoBulkUpdate.length > 0) {
             // update listData
-            zohoBulkUpdate.forEach(function(v,i){{
-                // console.log("code", v.response_data.code===0)
-                if(v.response_data.code===0){
-                    handleTableRowUpdates(v.product);
+            zohoBulkUpdate.forEach(function (v, i) {
+                {
+                    // console.log("code", v.response_data.code===0)
+                    if (v.response_data.code === 0) {
+                        handleTableRowUpdates(v.product);
+                    }
                 }
-            }})
+            })
         }
-    },[zohoBulkUpdate])
+    }, [zohoBulkUpdate])
 
     const handleBulkZohoSyncUpdate = (data) => {
         // console.log("handleBulkSync",data)
@@ -344,7 +361,7 @@ export function Home() {
     const handlePageChange = (page) => {
         setPage(page);
         setRefetchFlag(prev => !prev);
-    }   
+    }
 
     const handleSortChange = (v) => {
         let temp = sort, vtemp = Object.entries(v).pop();
@@ -374,12 +391,12 @@ export function Home() {
             <Modal isOpen={zohoSyncModal} onChange={setZohoSyncModal}>
                 <ZohoSyncForm locations={locations} onSyncUpdate={handleBulkZohoSyncUpdate} />
             </Modal>
-            <Modal  isOpen={formModal} onChange={setFormModal}>
+            <Modal isOpen={formModal} onChange={setFormModal}>
                 <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleContainerItemUpdate} onAddProduct={handleContainerItemCreate}></ProductsDetailsForm>
             </Modal>
             <div className="sticky top-0 bg-white shadow-lg z-[2000]">
                 <div className="w-full bg-white">
-                    <div className="container mx-auto">
+                    <div className="container mx-auto flex justify-between">
                         <div className="w-full px-1 py-4 flex justify-end items-center gap-1">
                             <button className="react-primary-button" onClick={() => setZohoSyncModal(true)}>Zoho Batch Sync</button>
                             <button onClick={handleCreateContainerButton} className="react-primary-outline-button bg-red-100">Add Product</button>
@@ -394,9 +411,9 @@ export function Home() {
                 </div>
                 {/* pagination */}
                 {
-                        displayResults && paginator && listData.length>0 && <div className="w-full bg-white">
+                    displayResults && paginator && listData.length > 0 && <div className="w-full bg-white">
                         <div className="container mx-auto flex items-center justify-between text-[.8em] mt-1">
-                            <div><Pagination currentPage={parseInt(pagination?.current)} totalPages={pagination?.total_pages}  onPageChange={handlePageChange}/></div>
+                            <div><Pagination currentPage={parseInt(pagination?.current)} totalPages={pagination?.total_pages} onPageChange={handlePageChange} /></div>
                             <div>page {`${pagination?.current} of ${pagination?.total_pages} (${pagination?.total_count} records)`}</div>
                         </div>
                     </div>
@@ -410,14 +427,14 @@ export function Home() {
                                 <div>
                                     <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort}></TableSortButton>
                                 </div>
-                                {filterObject && filterObject.map((filter, index) => (<FilterDropDown  key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
+                                {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <>
-                {   
+                {
                     !displayResults && <div className="w-full">
                         <div className="container mx-auto flex justify-center items-center py-10">
                             <div className="font-bold text-2xl text-stone-400 text-center">
@@ -491,7 +508,7 @@ export function Home() {
                                     </div>
                                     <div className="flex p-1 gap-1 w-[120px] justify-center">
                                         <div className="text-center">
-                                            <button onClick={()=> handleEditProductClick(product)} data-tooltip-id="edit-product-tooltip" className="action-icon-button">
+                                            <button onClick={() => handleEditProductClick(product)} data-tooltip-id="edit-product-tooltip" className="action-icon-button">
                                                 <Icon icon="ic:baseline-edit" />
                                             </button>
                                         </div>

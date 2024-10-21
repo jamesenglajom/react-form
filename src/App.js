@@ -15,7 +15,7 @@ function App() {
   }
   return (
     <div className="App">
-      <nav className="w-full bg-stone-900 p-5 flex justify-between">
+      {/* <nav className="w-full bg-stone-900 p-5 flex justify-between">
         <ul  className="flex items-center gap-5">
           <li>
             <NavLink  className={({isActive}) => isActive ? 'bg-slate-600 rounded p-1 text-white': 'rounded p-1 text-white'} to="/">Home</NavLink>
@@ -27,8 +27,7 @@ function App() {
             <NavLink  className={({isActive}) => isActive ? 'bg-slate-600 rounded p-1 text-white': 'rounded p-1 text-white'} to="/inventory">Inventory</NavLink>
           </li>
         </ul>
-        {/* <button onClick={handleConnecttoZoho} className="rounded bg-green-600 p-1 hover:bg-green-500">Connect to Zoho</button> */}
-      </nav>
+      </nav> */}
       <Routes>
         <Route path="/" element={<Home />}/>
         <Route path="/shipping-containers" element={<ShippingContainersPage />}/>
