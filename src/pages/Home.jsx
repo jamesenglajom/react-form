@@ -38,7 +38,7 @@ export function Home() {
     const [actionProcess, setActionProcess] = useState([]); // {id, action} > zoho_sync, set_generic_images
     const [refetchFlag, setRefetchFlag] = useState(false);
     const [sort, setSort] = useState({ orderby: 'modified_date', order: 'desc' });
-    const [paginationResetFlag, setPaginationResetFlag] = useState(true);
+    const [paginator, setPaginator] = useState(null);
     // product editItem 
     const [editProduct, setEditProduct] = useState(null)
     // Modals
@@ -46,15 +46,20 @@ export function Home() {
     const [imgUploadModal, setImgUploadModal] = useState(false);
     const [formModal, setFormModal] = useState(false);
 
-    useEffect(() => {
-        // console.log("useEffectlistData", listData);
-        // setDisplayResults(true);
-    }, [listData]);
+    // useEffect(() => {
+    //     // console.log("useEffectlistData", listData);
+    //     // setDisplayResults(true);
+    // }, [listData]);
 
     useEffect(() => {
-        // console.log("products from useEffect", products);
         setListData(products);
     }, [products]);
+
+    useEffect(() => {
+        if(pagination){
+            setPaginator(pagination);
+        }
+    }, [pagination]);
 
     let filters = [];
     useEffect(() => {
@@ -180,6 +185,7 @@ export function Home() {
         setFilterObject(prev => temp);
         setPage(prev => 1);
         setRefetchFlag(prev => !prev);
+        setPaginator(null);
     }
 
     const handleOnSearch = (v) => {
@@ -187,6 +193,7 @@ export function Home() {
         setSearch(prev => v);
         setPage(prev => 1);
         setRefetchFlag(prev => !prev);
+        setPaginator(null);
     }
 
     const handleImgUploadClick = (product) => {
@@ -387,7 +394,7 @@ export function Home() {
                 </div>
                 {/* pagination */}
                 {
-                        displayResults && pagination?.total_pages && pagination?.total_pages > 0 && pagination?.current && <div className="w-full bg-white">
+                        displayResults && paginator && <div className="w-full bg-white">
                         <div className="container mx-auto flex items-center justify-between text-[.8em] mt-1">
                             <div><Pagination currentPage={parseInt(pagination?.current)} totalPages={pagination?.total_pages}  onPageChange={handlePageChange}/></div>
                             <div>page {`${pagination?.current} of ${pagination?.total_pages} (${pagination?.total_count} records)`}</div>

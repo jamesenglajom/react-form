@@ -68,14 +68,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     </button>
     {
       pages.length > 0 && pages.length < 6 && 
-      pages.map(i=>(
-        <button key={`page-${i}`}  className={`react-pagination-page-button ${current==i?"active":""}`} onClick={()=> handlePageClick(i)}>{i}</button>
+      pages.map((v,i)=>(
+        <button key={`page-${i}`}  className={`react-pagination-page-button ${current==v?"active":""}`} onClick={()=> handlePageClick(v)}>{v}</button>
       )) 
     }
     {
       pages.length > 5 && 
-      pages.map(i=>(
-        i === "..." ? <button className="react-pagination-_-button">...</button>:<button key={`page-${i}`}  className={`react-pagination-page-button ${current==i?"active":""}`} onClick={()=> handlePageClick(i)}>{i}</button>
+      pages.map((v,i)=>(
+        v === "..." ? <button key={`page-${i}`} className="react-pagination-_-button">...</button>:<button key={`page-${i}`}  className={`react-pagination-page-button ${current==v?"active":""}`} onClick={()=> handlePageClick(v)}>{v}</button>
       )) 
     }
     <button className={`react-pagination-control-button ${current==total?"disabled":""}`} onClick={()=> handleControllerClick("next")} disabled={current==total}>
