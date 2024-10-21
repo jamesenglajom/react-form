@@ -78,10 +78,10 @@ export function InventoryPage(){
                             {
                                 categories && categories.length > 0 && categories.map((v,i)=> 
                                 <div key={`cat-${i}`} data-id={v.id} data-slug={v.slug} className={`cursor-pointer flex-1 user-select-none flex items-center border rounded ${selectedCategories.includes(v.id) ? "border-green-500":"border-stone-300 hover:border-stone-500"}`} onClick={()=>handleCategoryClick(v.id)}>
-                                    <div className="px-2">
+                                    <div className="px-2 use-select-none">
                                         <Icon icon="lets-icons:check-fill" className={`${selectedCategories.includes(v.id) ? "text-green-500":"text-stone-600"}`}/>
                                     </div>
-                                    <div>{v.name}</div>
+                                    <div className="user-select-none">{v.name}</div>
                                 </div>
                                 )
                             }
