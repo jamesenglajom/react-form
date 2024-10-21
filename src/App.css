@@ -498,6 +498,9 @@
   cursor:default !important;
   pointer-events: none !important;
   user-select:none !important;
+  padding:5px !important;
+  border:none !important;
+  color:black !important;
 }
 
 .table-sort-button-v2{
