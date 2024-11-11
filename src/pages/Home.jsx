@@ -219,21 +219,23 @@ export function Home() {
 
     const handleTableImageUpdates = (data) => {
         // console.log("handleTableImageUpdate", data);
-        if (data?.["images"]) {
-            let images_ids = data["images"].map(i => i.id);
-            setListData(prevData =>
-                prevData.map(i =>
-                    parseInt(i.id) === parseInt(data.product_id) ? { ...i, images: data.images, images_ids } : i
-                )
-            );
-        }
+        if(listData.length > 0){
+            if (data?.["images"]) {
+                let images_ids = data["images"].map(i => i.id);
+                setListData(prevData =>
+                    prevData.map(i =>
+                        parseInt(i.id) === parseInt(data.product_id) ? { ...i, images: data.images, images_ids } : i
+                    )
+                );
+            }
 
-        if (data?.["image"]) {
-            setListData(prevData =>
-                prevData.map(i =>
-                    parseInt(i.id) === parseInt(data.product_id) ? { ...i, image: data.image } : i
-                )
-            );
+            if (data?.["image"]) {
+                setListData(prevData =>
+                    prevData.map(i =>
+                        parseInt(i.id) === parseInt(data.product_id) ? { ...i, image: data.image } : i
+                    )
+                );
+            }
         }
     }
 
@@ -251,11 +253,13 @@ export function Home() {
     }
 
     const handleTableRowUpdates = (data) => {
-        setListData(prevData =>
-            prevData.map(i =>
-                parseInt(i.id) === parseInt(data.id) ? { ...data } : i
-            )
-        );
+        if(listData.length > 0){
+            setListData(prevData =>
+                prevData.map(i =>
+                    parseInt(i.id) === parseInt(data.id) ? { ...data } : i
+                )
+            );
+        }
     }
 
     useEffect(() => {
