@@ -219,7 +219,7 @@ export function Home() {
 
     const handleTableImageUpdates = (data) => {
         // console.log("handleTableImageUpdate", data);
-        if(listData.length > 0){
+        if(listData){
             if (data?.["images"]) {
                 let images_ids = data["images"].map(i => i.id);
                 setListData(prevData =>
@@ -253,7 +253,7 @@ export function Home() {
     }
 
     const handleTableRowUpdates = (data) => {
-        if(listData.length > 0){
+        if(listData){
             setListData(prevData =>
                 prevData.map(i =>
                     parseInt(i.id) === parseInt(data.id) ? { ...data } : i

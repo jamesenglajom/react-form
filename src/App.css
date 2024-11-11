@@ -544,3 +544,8 @@
 .table-sort-button-v2 .iconify{
   color:black !important;
 }
+
+/* removed from display */
+.page-header{
+  display:none;
+}

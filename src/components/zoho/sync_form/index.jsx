@@ -4,6 +4,8 @@ import axios from "axios";
 
 function ZohoSyncForm({locations, onSyncUpdate}) {
     // const [activeTab, setActiveTab] = useState(0); // Manages active tab index
+    const locationOptions = locations.map(i=> i.title);
+    locationOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncLength, setSyncLength] = useState(0);
     const [syncIndex, setSyncIndex] = useState(0);
@@ -11,7 +13,7 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
     const [syncData, setSyncData] = useState([]);
     const [syncReport, setSyncReport] = useState([]);
     const [showReport, setShowReport] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState("Atlanta, GA");
+    const [selectedLocation, setSelectedLocation] = useState(locationOptions[0]);
     const [selectedGrade, setSelectedGrade] = useState("AS IS");
     const [selectedCondition, setSelectedCondition] = useState("New");
     const tabs = ['Location', 'Grade', 'Condition']; // Tab titles
@@ -20,7 +22,6 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
         'Grade',
         'Condition',
     ]; // Content for each tab
-    const locationOptions = locations.map(i=> i.title);
     
     // set initial selectedLocation 
     // useEffect(()=>{
@@ -35,7 +36,6 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
     const conditionOptions = [
         "New", "Used", "Refurbished",
     ];
-    locationOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     gradeOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     conditionOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
