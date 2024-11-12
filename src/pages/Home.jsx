@@ -52,9 +52,11 @@ export function Home() {
     //     // console.log("useEffectlistData", listData);   
     //     // setDisplayResults(true);
     // }, [listData]);
-    useEffect(() => {
-        ZohoAuth();
-    }, []);
+    
+    // uncomment on build
+    // useEffect(() => {
+    //     ZohoAuth();
+    // }, []);
 
     const ZohoAuth = () => {
         const queryParams = new URLSearchParams(location.search);
@@ -66,6 +68,7 @@ export function Home() {
             window.location.href = process.env.REACT_APP_ZOHO_AUTH_URL; // Replace with your external URL
         }
     }
+    
     useEffect(() => {
         setListData(products);
     }, [products]);
