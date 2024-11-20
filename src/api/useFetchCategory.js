@@ -6,14 +6,13 @@ const useFetchCategory = () => {
   // const [count, setCount] = useState(0);
   const [loading, setFetchLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
       try {
         setFetchLoading(true);
-        axios.get('https://onsitestorage.com/wp-json/wp_to_react/v1/product-categories')
+        axios.get(process.env.REACT_APP_API_URL+'/product-categories')
           .then(response => {
             setData(response.data);
-            // setCount(response.data.count);
+            console.log("categories:", response.data)
             setFetchLoading(false);
           })
           .catch(error => {

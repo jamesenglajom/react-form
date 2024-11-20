@@ -6,19 +6,34 @@ import Swal from 'sweetalert2';
 const InputImages = ({ update, onUpdate }) => {
   const fileInputRef = useRef(null);
   const fileInputRef1 = useRef(null);
-  let API_URL = 'https://onsitestorage.com/wp-json/wp_to_react/v1/product_images';
+  const containerCatId = 18;
+  const API_URL = process.env.REACT_APP_API_URL +'/product_images';
   const [selectedImages, setSelectedImages] = useState([]);
   const [images, setImages] = useState(update["images"]);
   const [image, setImage] = useState(update["image"]);
   const [processing, setProcessing] = useState(false);
+  const [updateIsContainer, setUpdateIsContainer] = useState(false);
+
+  // useEffect(() => {
+  //   setImages(update["images"]);
+  // }, [update["images"]])
+
+  // useEffect(() => {
+  //   setImage(update["image"]);
+  // }, [update["image"]])
 
   useEffect(() => {
-    setImages(update["images"]);
-  }, [update["images"]])
-
-  useEffect(() => {
-    setImage(update["image"]);
-  }, [update["image"]])
+    if(update){
+      setImage(update["image"]);   
+      setImages(update["images"]);
+      const category_ids = update?.categories_ids;
+      if(category_ids.includes(containerCatId)){
+        setUpdateIsContainer(true)
+      }else{
+        setUpdateIsContainer(false)
+      }
+    }
+  }, [update])
 
   const handleSelectAll = () => {
     setSelectedImages(images.map(i => i.id))
@@ -228,8 +243,8 @@ const InputImages = ({ update, onUpdate }) => {
         ))}
       </ul>
 
-      <div className="mt-5">
-        <button className="product-set-generic-image-attachments-button" onClick={postSetGenericImageAttachments}>Set Generic Image Attachements</button>
+      <div className="mt-5" >
+        <button className={`react-primary-button ${updateIsContainer?'':'disabled'}`} disabled={!updateIsContainer} onClick={postSetGenericImageAttachments}>Set Generic Image Attachements</button>
       </div>
     </div>
   );

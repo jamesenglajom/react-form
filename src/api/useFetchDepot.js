@@ -6,11 +6,11 @@ const useFetchDepot = () => {
   const [count, setCount] = useState(0);
   const [loading, setFetchLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
       try {
         setFetchLoading(true);
-        axios.get('https://onsitestorage.com/wp-json/wp_to_react/v1/stores')
+        axios.get(process.env.REACT_APP_API_URL+'/stores')
           .then(response => {
             setData(response.data.stores.sort((a, b) => a.title.localeCompare(b.title)));
             setCount(response.data.count);

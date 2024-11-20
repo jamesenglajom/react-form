@@ -15,9 +15,17 @@ import { toast, ToastContainer } from 'react-toastify';
 import Pagination from "../components/pagination";
 import TableSortButton from "../components/table/sort_button_v2";
 import { useLocation } from 'react-router-dom';
-
+import useFetchCategory from "../api/useFetchCategory";
 
 export function Home() {
+    const containerCatId = 18;
+    const accessoryCatId = 308;
+    const lightingCatId = 330;
+    const rampCatId = 328;
+    const securityCatId = 327;
+    const shelvingCatId = 329;
+    const { data: categories } = useFetchCategory();
+    
     const sorter = [
         { id: "name", label: "Name" },
         { id: "sku", label: "SKU" },
@@ -25,6 +33,7 @@ export function Home() {
         { id: "published_date", label: "Publish Date" },
         { id: "modified_date", label: "Modified Date" },
     ];
+
     const location = useLocation();
     const API_URL = process.env.REACT_APP_API_URL;
     const base_url = API_URL + '/products';
@@ -41,17 +50,13 @@ export function Home() {
     const [refetchFlag, setRefetchFlag] = useState(false);
     const [sort, setSort] = useState({ orderby: 'modified_date', order: 'desc' });
     const [paginator, setPaginator] = useState(null);
+    const [filteredProductType, setFilteredProductType] = useState(["general"]);
     // product editItem 
     const [editProduct, setEditProduct] = useState(null)
     // Modals
     const [zohoSyncModal, setZohoSyncModal] = useState(false);
     const [imgUploadModal, setImgUploadModal] = useState(false);
     const [formModal, setFormModal] = useState(false);
-
-    // useEffect(() => {
-    //     // console.log("useEffectlistData", listData);   
-    //     // setDisplayResults(true);
-    // }, [listData]);
     
     // uncomment on build
     // useEffect(() => {
@@ -79,11 +84,26 @@ export function Home() {
         }
     }, [pagination]);
 
+
     let filters = [];
     useEffect(() => {
         filters = [
             {
-                title: "Location", name: 'location', default: [], options: locations.map(i => ({ id: i.title, label: i.title })), value: []
+                title: "Product Type", name: "category", default: [], options: [
+                    {id: `${containerCatId}`, label:"Shipping Containers" },
+                    {id: `${accessoryCatId}`, label:"Accessories" }
+                ], value: [], for: "general",
+            },
+            {
+                title: "Category", name: 'acc_category', default: [], options: [
+                    { id: `${lightingCatId}`, label: "Lighting" },
+                    { id: `${rampCatId}`, label: "Ramp" },
+                    { id: `${securityCatId}`, label: "Security" },
+                    { id: `${shelvingCatId}`, label: "Shelving" },
+                ], value: [], for:"accessories"
+            },
+            {
+                title: "Location", name: 'location', default: [], options: locations.map(i => ({ id: i.title, label: i.title })), value: [], for:"containers"
             },
             {
                 title: "Grade", name: 'grade', default: [], options: [
@@ -91,14 +111,14 @@ export function Home() {
                     { id: 'Cargo Worthy (CW)', label: "Cargo Worthy (CW)" },
                     { id: 'IICL', label: "IICL" },
                     { id: 'Wind and Water tight (WWT)', label: "Wind and Water Tight (WWT)" },
-                ], value: []
+                ], value: [], for:"containers"
             },
             {
                 title: "Condition", name: 'condition', default: [], options: [
                     { id: 'New', label: "New" },
                     { id: 'Used', label: "Used" },
                     { id: 'Refurbished', label: "Refurbished" },
-                ], value: []
+                ], value: [], for:"containers"
             },
             {
                 title: "Size", name: 'length_width', default: [], options: [
@@ -107,20 +127,20 @@ export function Home() {
                     { id: "40'", label: "40'" },
                     { id: "45'", label: "45'" },
                     { id: "53'", label: "53'" },
-                ], value: []
+                ], value: [], for:"containers"
             },
             {
                 title: "Height", name: 'height', default: [], options: [
                     { id: `8' 6" Standard`, label: `8' 6" Standard` },
                     { id: `9' 6" High Cube (HC)`, label: `9' 6" High Cube (HC)` },
-                ], value: []
+                ], value: [], for:"containers"
             },
             {
                 title: "Selection Type", name: 'selectionoptions', default: [], options: [
                     { id: 'First off the Stack (FO)', label: "First off the Stack (FO)" },
                     { id: 'Exclusive Pool (EP)', label: "Exclusive Pool (EP)" },
                     { id: 'You Pick (UP)', label: "You Pick (UP)" },
-                ], value: []
+                ], value: [], for:"containers"
             },
         ];
         setFilterObject(filters);
@@ -130,7 +150,7 @@ export function Home() {
     useEffect(() => {
         const generated_url = generateURL(generateUrlParams(getAllParams()))
         // console.log("check url params -- from refetchFlag useEffect", generated_url);
-        let triggerKeys = ["search", "location", "condition", "grade", "size", "height", "selectionoptions"];
+        let triggerKeys = ["search", "location", "condition", "grade", "size", "height", "selectionoptions","category","acc_category"];
         let match = triggerKeys.some(key => generated_url.includes(key));
         if (match) {
             setURL(generated_url);
@@ -141,14 +161,33 @@ export function Home() {
     }, [refetchFlag]);
 
     const arrayToObject = (arr) => {
+
         return arr.reduce((accumulator, item) => {
             accumulator[item.name] = item.value;
-            return accumulator;
+            return accumulator; 
         }, {});
     };
 
     const getAllParams = () => {
         let temp = filterObject;
+        const category_filter = temp.filter(i=> i.name === "category")[0];
+        let filter_product_type = ["general"];
+        if(category_filter){
+            if(category_filter.value.length > 0 && category_filter.value.length < 2){
+                if(parseInt(category_filter.value[0]) === containerCatId){
+                    filter_product_type = ["general","containers"]
+                }else if(parseInt(category_filter.value[0]) === accessoryCatId){
+                    filter_product_type = ["general","accessories"]
+                }else{
+                    filter_product_type = ["general"]
+                }
+            }else if(category_filter.value.length === 0 || category_filter.value.length > 1){
+                filter_product_type = ["general"]
+            }
+        }
+        setFilteredProductType(filter_product_type);
+        temp = temp.filter(i=> filter_product_type.includes(i.for));
+
         // remove properties with no values
         temp = temp.filter(i => i.value.length > 0);
         temp = arrayToObject(temp);
@@ -182,9 +221,21 @@ export function Home() {
         return array.findIndex(item => item.name === name);
     };
 
+    const getProductType = (data) => {
+        // container = 18, accessory= 308,
+        let category_ids = data?.["categories_ids"];
+        let product_type = "Container"
+        if(category_ids.includes(18)){
+            product_type = "Container";
+        }else{
+            product_type = "Accessory";
+        }
+        return product_type;
+    }
 
-    const handleContainerItemCreate = (data) => {
-        toast.success(`Container Item Create Success! -- Container(${data.id}).`, {
+    const handleProductItemCreate = (data) => {
+        const product_type = getProductType(data);
+        toast.success(`${product_type} Item Create Success! -- ${product_type}(${data.id}).`, {
             position: "bottom-right"
         });
         setFormModal(false);
@@ -247,8 +298,9 @@ export function Home() {
         setFormModal(true);
     }
 
-    const handleContainerItemUpdate = (data) => {
-        toast.success(`Container Item Update Success! -- Container(${data.id}).`, {
+    const handleProductItemUpdate = (data) => {
+        const product_type = getProductType(data);
+        toast.success(`${product_type} Item Update Success! -- ${product_type}(${data.id}).`, {
             position: "bottom-right"
         });
         handleTableRowUpdates(data);
@@ -399,7 +451,7 @@ export function Home() {
                 <ZohoSyncForm locations={locations} onSyncUpdate={handleBulkZohoSyncUpdate} />
             </Modal>
             <Modal isOpen={formModal} onChange={setFormModal}>
-                <ProductsDetailsForm locations={locations} update={editProduct} onUpdate={handleContainerItemUpdate} onAddProduct={handleContainerItemCreate}></ProductsDetailsForm>
+                <ProductsDetailsForm locations={locations} categories={categories} update={editProduct} onUpdate={handleProductItemUpdate} onAddProduct={handleProductItemCreate}></ProductsDetailsForm>
             </Modal>
             <div className="sticky top-0 bg-white shadow-lg z-[2000]">
                 <div className="w-full bg-white">
@@ -429,12 +481,14 @@ export function Home() {
                 <div className="w-full bg-white">
                     <div className="container mx-auto">
                         <div className="w-full flex items-center">
-
                             <div className="w-full px-1 py-4 flex  items-center gap-1">
                                 <div>
                                     <TableSortButton options={sorter} type="multi" onChange={handleSortChange} value={sort}></TableSortButton>
                                 </div>
-                                {filterObject && filterObject.map((filter, index) => (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>))}
+                                {filterObject && filterObject.map((filter, index) => 
+                                 (filteredProductType.includes(filter.for)) && 
+                                 (<FilterDropDown key={`filter-dropdown-${filter.name}`} value={filterObject[index].value} title={filter.title} options={filter.options} type="multi" onChange={handleFilterChange} name={filter.name}></FilterDropDown>)  
+                                )}
                             </div>
                         </div>
                     </div>
@@ -525,7 +579,7 @@ export function Home() {
                                             </button>
                                         </div>
                                         <div className="text-center">
-                                            <button onClick={() => handleSetGenericImgClick(product)} data-tooltip-id="generic-images-tooltip" className={`action-icon-button bg-red-700 ${actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? "is_busy" : ""}`}>
+                                            <button onClick={() => handleSetGenericImgClick(product)} data-tooltip-id="generic-images-tooltip" className={`action-icon-button bg-red-700 ${actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? "is_busy" : ""}`}  disabled={!product.categories_ids.includes(containerCatId)}>
                                                 {
                                                     actionProcess.filter(i => i.id === product.id && i.action === "set_generic_images").length > 0 ? <Icon icon="gg:spinner-two" className="animate-spin" /> : <Icon icon="ic:baseline-image-search" />
                                                 }

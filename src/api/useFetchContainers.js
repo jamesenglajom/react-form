@@ -10,7 +10,6 @@ const useFetchContainers = (url) => {
   const fetchData = useCallback(async (abortSignal) => {
     setLoading(prev=> prev === prev);
     setError(null);
-    console.log("function execution");
     try {
       await axios.get(url,{signal:abortSignal}).then(response => {
         const {products, pagination } = response?.data;

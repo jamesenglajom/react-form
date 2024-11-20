@@ -76,7 +76,7 @@ export const form_fields = [
   },
   {
     property_name: "categories",
-    value:["Uncategorized"],
+    value:[18],
   },
   {
     property_name: "sku",
@@ -106,8 +106,8 @@ export const form_fields = [
     value: `Used`,
   },
   {
-    property_name: "selectionoptions",
-    value: `First of the Stack (FO)`,
+    property_name: "form_selectionoptions",
+    value: `FO`,
   },
   {
     property_name: "doortype",
@@ -115,23 +115,27 @@ export const form_fields = [
   },
   {
     property_name: "sales_tags",
-    value: "bestseller",
+    value: "",
   },
-  // {
-  //   property_name: "store_id",
-  //   value:"121"
-  // },
+  {
+    property_name: "store_id",
+    value:"123"
+  },
   {
     property_name: "payment_type",
     value: "buy",
   },
   {
     property_name: "reefer_container",
-    value: true,
+    value: "1",
   },
   {
     property_name: "reefer_container_status",
-    value: true,
+    value: "1",
+  },
+  {
+    property_name: "stocks",
+    value: 0,
   },
 ];
 

@@ -22,7 +22,7 @@ const useFetchData = (url) => {
         setFetchLoading(true);
         axios.get(url,{signal})
           .then(response => {
-            // console.log(response.data)
+            console.log(response.data)
             setData(response.data.products);
             setPagination(response.data.pagination);
             setCount(response.data.count);

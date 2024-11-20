@@ -117,9 +117,24 @@ export const TabComponent = () => {
 
     useEffect(() => {
         if (locations && locations.length > 0) {
-            setSelectedDepotDetails(locations.filter(i => parseInt(i.id) === parseInt(formData.depot_id))[0]);
+            const details = locations.filter(i => parseInt(i.id) === parseInt(formData.depot_id))[0];
+            if(isValidJSON(details["custom"])){
+                details["custom"] = JSON.parse(details["custom"]);
+            }else{
+                details["custom"] = details["custom"];
+            }
+            setSelectedDepotDetails(details);
         }
     }, [locations]);
+
+    const isValidJSON = (json_var) => {
+        try{
+            JSON.parse(json_var);
+            return true;
+        }catch(e){
+            return false;
+        }
+    }
 
     // Handle primary tab click
     const handlePrimaryTabClick = (tab) => {
@@ -156,7 +171,13 @@ export const TabComponent = () => {
     const handleDepotOnChange = (e) => {
         const { value } = e.target;
         const location_title = locations.filter(i => i.id === value)[0].title;
-        setSelectedDepotDetails(locations.filter(i => parseInt(i.id) === parseInt(value))[0]);
+        const details = locations.filter(i => parseInt(i.id) === parseInt(value))[0];
+        if(isValidJSON(details["custom"])){
+            details["custom"] = JSON.parse(details["custom"]);
+        }else{
+            details["custom"] = details["custom"];
+        }
+        setSelectedDepotDetails(details);
         setFormData(prev => ({ ...prev, depot_id: value, location: location_title }));
         // setDepot(value)
     }
@@ -292,7 +313,8 @@ export const TabComponent = () => {
                                                                     selectedDepotDetails && <div className="w-full flex flex-col gap-4 mt-4">
                                                                         <div>DepotID: {selectedDepotDetails.id}</div>
                                                                         <div>Country: {selectedDepotDetails.country == 223 ? "United States" : "Canada"}</div>
-                                                                        <div>Relocation Fee: ${JSON.parse(selectedDepotDetails.custom)?.relocation_fee ? JSON.parse(selectedDepotDetails.custom)?.relocation_fee : 0}</div>
+                                                                        <div>Relocation Fee: ${selectedDepotDetails?.custom?.relocation_fee}</div>
+                                                                        <div>Is Virtual Depot: {selectedDepotDetails?.custom?.is_virtual_depo}</div>
                                                                     </div>
                                                                 }
                                                             </div>
