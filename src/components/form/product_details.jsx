@@ -540,7 +540,7 @@ const ProductsDetailsForm = ({ locations, categories, update, onUpdate, onAddPro
             <button
               key={ptab.name}
               ref={ptab.ref}
-              className={`py-2 px-4 font-semibold focus:outline-none ${activePrimaryTab === ptab.name ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'
+              className={`product-form-primary-tab ${activePrimaryTab === ptab.name ? 'active' : ''
                 }`}
               onClick={() => handlePrimaryTabClick(ptab.name)}
             >

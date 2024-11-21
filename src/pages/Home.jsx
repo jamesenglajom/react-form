@@ -59,9 +59,9 @@ export function Home() {
     const [formModal, setFormModal] = useState(false);
     
     // uncomment on build
-    useEffect(() => {
-        ZohoAuth();
-    }, []);
+    // useEffect(() => {
+    //     ZohoAuth();
+    // }, []);
 
     const ZohoAuth = () => {
         const queryParams = new URLSearchParams(location.search);

@@ -148,7 +148,7 @@ const AccessoriesForm = ({ categories, update, onUpdate, onAddProduct }) => {
                             <div className="px-2 use-select-none">
                                 <Icon icon="lets-icons:check-fill" className={`${formData?.categories.includes(v.id) ? "text-white" : "text-stone-300"}`} />
                             </div>
-                            <div className={`${formData?.categories.includes(v.id) ? "text-white" : "text-stone-500"}`}>{`${v?.parent !== 0 ? accCat.filter(i => i.id === v?.parent)[0]?.name + " > " + v?.name : v?.name} || ${v?.id}`}</div>
+                            <div className={`${formData?.categories.includes(v.id) ? "text-white" : "text-stone-500"}`}>{`${v?.parent !== 0 ? accCat.filter(i => i.id === v?.parent)[0]?.name + " > " + v?.name : v?.name}`}</div>
                         </div>
                     )
                 }

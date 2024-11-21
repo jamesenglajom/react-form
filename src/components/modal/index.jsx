@@ -15,7 +15,7 @@ export default function Modal({ children, isOpen, onChange }) {
                 <div className="absolute top-[60px] right-[10px]">
                     <Icon icon="fluent:dismiss-16-filled" className="text-stone-200 hover:text-white cursor-pointer" onClick={()=> onChange(false)} />
                 </div>
-                <div className="bg-white rounded-lg">
+                <div className="bg-white rounded-lg  overflow-hidden">
                     {children}
                 </div>
 

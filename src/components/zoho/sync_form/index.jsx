@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import ProgressBar from "../../progress_bar/index"
 import axios from "axios";
 
-function ZohoSyncForm({locations, onSyncUpdate}) {
+function ZohoSyncForm({ locations, onSyncUpdate }) {
     // const [activeTab, setActiveTab] = useState(0); // Manages active tab index
-    const locationOptions = locations.map(i=> i.title);
+    
+    const locationOptions = locations.map(i => i.title);
     locationOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncLength, setSyncLength] = useState(0);
     const [syncIndex, setSyncIndex] = useState(0);
@@ -16,40 +18,71 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
     const [selectedLocation, setSelectedLocation] = useState(locationOptions[0]);
     const [selectedGrade, setSelectedGrade] = useState("AS IS");
     const [selectedCondition, setSelectedCondition] = useState("New");
-    const tabs = ['Location', 'Grade', 'Condition']; // Tab titles
-    const tabContent = [
-        'Location',
-        'Grade',
-        'Condition',
-    ]; // Content for each tab
-    
-    // set initial selectedLocation 
-    // useEffect(()=>{
-    //     const locationOpt = locations.map(i=> i.title);
-    //     locationOpt.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-    //     selectedLocation(locationOpt[0]);
-    // },[locations]);
-    
+    const [productType, setProductType] = useState("containers");
+
     const gradeOptions = [
         "AS IS", "IICL", "Cargo Worthy (CW)", "Wind and Water Tight (WWT)"
     ];
     const conditionOptions = [
         "New", "Used", "Refurbished",
     ];
+
+
     gradeOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     conditionOptions.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    
+    const formDataDefault = {
+        product_type: "containers",
+        location: locationOptions[0],
+        grade: gradeOptions[0],
+        condition: conditionOptions[0],
+        acc_type: "lighting",//acc_category
+    };
 
-    // useEffect(()=>{
-    //     setSelectedLocation(locationOptions[0]);
-    //     setSelectedGrade(gradeOptions[0]);
-    //     setSelectedCondition(conditionOptions[0]);
-    // },[])
+    const [formData, setFormData] = useState(formDataDefault);
+
+    const filters = [
+        {
+            for: "general", label: "Product Type", name: "product_type", options: [
+                { id: "containers", label: "Shipping Containers" },
+                { id: "accessories", label: "Accessories" },
+            ]
+        },
+        { for: "containers", label: "Location", name: "location", options: locationOptions.map(i => ({ id: i, label: i })) },
+        { for: "containers", label: "Grade", name: "grade", options: gradeOptions.map(i => ({ id: i, label: i })) },
+        { for: "containers", label: "Condition", name: "condition", options: conditionOptions.map(i => ({ id: i, label: i })) },
+        // accessory type (accessories)
+        {
+            for: "accessories", label: "Type", name: "acc_type", options: [
+                { id: "lighting", label: "Lighting" },
+                { id: "ramp", label: "Ramp" },
+                { id: "security", label: "Security" },
+                { id: "shelving", label: "Shelving" },
+            ]
+        },
+
+    ];
+
 
     useEffect(() => {
         if (syncLength > 0 && syncLength > syncIndex && isSyncing) {
             zoho_sync(syncData);
         }
     }, [syncIndex]);
+    
+    const formatFormData = (data) => {
+        const tmp = data;
+        const tmp_keys = Object.keys(tmp);
+        const inclusion_keys = filters.filter(i=> (i.for===productType || i.for==="general")).map(i=> i.name); 
+        const filteredKeys = tmp_keys.filter(i=> inclusion_keys.includes(i)) 
+        const formattedData = filteredKeys.reduce((acc, key) => {
+            if (key in tmp) {
+              acc[key] = tmp[key];
+            }
+            return acc;
+          }, {}); 
+        return formattedData;
+    }
 
     const handleStartSyncClick = () => {
         setShowReport(false);
@@ -58,15 +91,13 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
         setSyncLength(0);
         setSyncProgress(0);
         setSyncData([]);
-        const data = { location: selectedLocation, grade: selectedGrade, condition: selectedCondition, }
-        // get product ids of products under requested properties
+        const data = formatFormData(formData);
         try {
             axios.post(process.env.REACT_APP_API_URL + "/zoho-bulk-sync-ids", data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             }).then(res => {
-                console.log(res);
                 const { data } = res;
                 let dataChunks = [];
                 if (data.count === 0) {
@@ -93,12 +124,12 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
         zoho_sync(data);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         onSyncUpdate(syncReport);
-    },[syncReport]);
+    }, [syncReport]);
 
     const zoho_sync = (data) => {
-        console.log(`${data.length} > ${syncIndex}`,data.length > syncIndex)
+        console.log(`${data.length} > ${syncIndex}`, data.length > syncIndex)
         if (data.length > syncIndex) {
             const product_ids = { product_ids: data[syncIndex], progress_index: syncIndex, progress_length: data.length };
             try {
@@ -110,12 +141,12 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
                     const { progress, report } = res.data;
                     setSyncProgress(prev => progress);
                     setSyncReport(prev => [...prev, ...report]);
-                    
+
                     if (progress === 100) {
                         setShowReport(true);
-                        setIsSyncing(false);    
+                        setIsSyncing(false);
                         setSyncIndex(prev => 0);
-                    }else{
+                    } else {
                         setSyncIndex(prev => prev + 1);
                     }
                 })
@@ -138,6 +169,14 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
         }
     }
 
+    const handleFilterSelect = (e) => {
+        const {name, value} = e.target;
+        setFormData(prev=> ({...prev, [name]:value}))
+        if(name==="product_type"){
+            setProductType(value);
+        }
+    }
+
     const splitArrayIntoChunks = (arr, chunkSize) => {
         const result = [];
         for (let i = 0; i < arr.length; i += chunkSize) {
@@ -152,36 +191,22 @@ function ZohoSyncForm({locations, onSyncUpdate}) {
             <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <p>Select properties of products to sync.</p>
                 <div className="table">
-                    <div className="table-row">
-                        <div className="p-3 pl-0 table-cell w-[120px]">
-                            Location
-                        </div>
-                        <div className="p-3 pl-0 table-cell">
-                            <select name="location-sync" id="location-sync" className="outline-none border-2 border-stone-500 px-4 rounded w-full" value={selectedLocation} onChange={handleSelectValueOnChange}>
-                                {locationOptions.map((option, index) => <option key={`option-${option}`} value={option}>{option}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="table-row">
-                        <div className="p-3 pl-0 table-cell">
-                            Grade
-                        </div>
-                        <div className="p-3 pl-0 table-cell">
-                            <select name="grade-sync" id="grade-sync" className="outline-none border-2 border-stone-500 px-4 rounded w-full" value={selectedGrade} onChange={handleSelectValueOnChange}>
-                                {gradeOptions.map((option, index) => <option key={`option-${option}`} value={option}>{option}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="table-row">
-                        <div className="p-3 pl-0 table-cell">
-                            Condition
-                        </div>
-                        <div className="p-3 pl-0 table-cell">
-                            <select name="condition-sync" id="condition-sync" className="outline-none border-2 border-stone-500 px-4 rounded w-full" value={selectedCondition} onChange={handleSelectValueOnChange}>
-                                {conditionOptions.map((option, index) => <option key={`option-${option}`} value={option}>{option}</option>)}
-                            </select>
-                        </div>
-                    </div>
+                    {
+                        filters.map((i,index) => 
+                            (i?.["for"] === "general" || i?.["for"] === productType) && (
+                                <div className="table-row" key={`${i.name}-${index}`}>
+                                    <div className="p-3 pl-0 table-cell w-[120px]">
+                                        { i.label }
+                                    </div>
+                                    <div className="p-3 pl-0 table-cell">
+                                        <select name={i.name} id={i.name} className="outline-none border-2 border-stone-500 px-4 rounded w-full" value={formData[i.name]} onChange={handleFilterSelect} disabled={isSyncing}>
+                                            {i.options.map((option, index) => <option key={`option-${i.name}-${option.id}`} value={option.id}>{option.label}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                            )
+                        )
+                    }
                 </div>
                 <div className="w-full">
                     <ProgressBar progress={syncProgress} />
